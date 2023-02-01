@@ -1,2 +1,2 @@
 # ProjetIonicSMIN
-Projet ionic SMIN
+Projet d'application type mtag en ionic
