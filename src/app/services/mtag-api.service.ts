@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { LineSchedule } from '../interfaces/line-schedule';
 
 export interface TramLine {
   id: string;
@@ -27,6 +28,15 @@ export interface StationsOfLine {
   TramStation: TramStation[];
 }
 
+export interface TimesObject {
+  headsign: string;
+  occupancy: string;
+  realtimeArrival: number;
+  stopName: string;
+  arrivalDelay: number;
+  minutes: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -52,14 +62,15 @@ export class MTAGAPIService {
 
   constructor(private http: HttpClient) {}
 
+  // get stop times from station id and line id | use TramStations.TramTramStation.id and TramStations.TramLines.id
   getStopTimesFromStation(station: string, line: string) {
     let url =
       this.mtagApiUrl +
       this.URLhorairesArret.replace(':station', station).replace(':line', line);
 
-    console.log('STOP TIMES | URL : ' + url);
+    // console.log('STOP TIMES | URL : ' + url);
 
-    let data = this.http
+    this.http
       .get(url, {
         headers: {
           Origin: 'https://www.armieux.fr',
@@ -68,7 +79,38 @@ export class MTAGAPIService {
       .subscribe((data: any) => {
         console.log('GET HORAIRE DATA : ');
         console.log(data);
+
+        let lineSchedules: LineSchedule[] = [];
+        //chaque direction
+        data.forEach((element: any) => {
+          //chaque horaire
+          let lineSchedule: LineSchedule = { direction: '', times: [] };
+          lineSchedule.direction = element.pattern.desc;
+          element.times.forEach((element: any) => {
+            let date = new Date(element.realtimeArrival * 1000);
+            let minutes = date.getMinutes();
+            console.log(minutes);
+            lineSchedule.times.push(minutes.toString());
+          });
+          lineSchedules.push(lineSchedule);
+        });
+
+        console.log('LINE SCHEDULES : ');
+        console.log(lineSchedules);
+
         return data;
+        // convert timestamps to minutes
+        // let lineSchedule: LineSchedule[] = [];
+
+        // data[0].times.forEach((element: any) => {
+        //   let date = new Date(element.realtimeArrival * 1000);
+        //   let minutes = date.getMinutes();
+        //   console.log(element.headsign);
+        // });
+        // lineSchedule.push({
+        //   direction: element.headsign,
+        //   times: [minutes.toString()],
+        // });
       });
   }
 
