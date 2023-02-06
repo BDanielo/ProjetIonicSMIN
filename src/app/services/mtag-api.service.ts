@@ -77,8 +77,8 @@ export class MTAGAPIService {
         },
       })
       .subscribe((data: any) => {
-        console.log('GET HORAIRE DATA : ');
-        console.log(data);
+        // console.log('GET HORAIRE DATA : ');
+        // console.log(data);
 
         let lineSchedules: LineSchedule[] = [];
         //chaque direction
@@ -95,8 +95,8 @@ export class MTAGAPIService {
           lineSchedules.push(lineSchedule);
         });
 
-        console.log('LINE SCHEDULES : ');
-        console.log(lineSchedules);
+        // console.log('LINE SCHEDULES : ');
+        // console.log(lineSchedules);
 
         return data;
         // convert timestamps to minutes
