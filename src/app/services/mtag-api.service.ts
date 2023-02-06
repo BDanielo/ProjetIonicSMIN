@@ -98,19 +98,7 @@ export class MTAGAPIService {
         // console.log('LINE SCHEDULES : ');
         // console.log(lineSchedules);
 
-        return data;
-        // convert timestamps to minutes
-        // let lineSchedule: LineSchedule[] = [];
-
-        // data[0].times.forEach((element: any) => {
-        //   let date = new Date(element.realtimeArrival * 1000);
-        //   let minutes = date.getMinutes();
-        //   console.log(element.headsign);
-        // });
-        // lineSchedule.push({
-        //   direction: element.headsign,
-        //   times: [minutes.toString()],
-        // });
+        return lineSchedules;
       });
   }
 
