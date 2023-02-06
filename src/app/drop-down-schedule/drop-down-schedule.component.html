@@ -29,5 +29,8 @@
         </div>
       </div>
     </div>
+    <div *ngIf="linesSchedule == undefined || linesSchedule.length == 0"  class="dropDown_body_content">
+      <p>Pas d'horaires pour cette arret</p>
+    </div>
   </div>
 </div>

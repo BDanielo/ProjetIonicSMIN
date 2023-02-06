@@ -18,7 +18,7 @@ export class DropDownScheduleComponent implements OnInit {
   @Input() isAlert: boolean = false;
   @Input() stationId: string = "";
 
-  linesSchedule: Array<LineSchedule> | undefined;
+  linesSchedule: Array<LineSchedule> = [];
 
   lineColor: LineColor = {
     A: "#3376B8",
@@ -44,8 +44,14 @@ export class DropDownScheduleComponent implements OnInit {
 
   ngOnInit() {
     this.color = this.lineColor[this.lineName];
+    this.testIcon();
+  }
+
+  testIcon(){
     if (this.isAlert) {
       this.customWidth = 50;
+    } else {
+      this.customWidth = 65;
     }
   }
 
@@ -62,9 +68,10 @@ export class DropDownScheduleComponent implements OnInit {
   getSchedule(){
     this.mtagService.getStopTimesFromStation(this.stationId, "SEM:" + this.lineName).then((data:any ) => {
       this.linesSchedule = data;
-      console.log(
-        data
-      );
+      if (data == undefined || data.length == 0) {
+        this.isAlert = true;
+        this.testIcon();
+      }
     });   
     
   }

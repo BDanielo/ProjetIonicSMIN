@@ -39,7 +39,7 @@ export class MTAGAPIService {
           line
         );
 
-      // console.log('STOP TIMES | URL : ' + url);
+      console.log('STOP TIMES | URL : ' + url);
 
       this.http
         .get(url, {
