@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { LineSchedule } from '../interfaces/line-schedule';
 import { MTAGAPIService } from '../services/mtag-api.service';
+import { FavoritesService } from '../services/favorites.service';
+import { Favorite } from '../interfaces/favorite';
 
 interface LineColor {
   [key: string]: string;
@@ -39,7 +41,10 @@ export class DropDownScheduleComponent implements OnInit {
   customWidth = 65;
   timerInterval: any;
 
-  constructor(public mtagService: MTAGAPIService) { }
+  constructor(
+    public mtagService: MTAGAPIService,
+    public favoritesService: FavoritesService
+    ) {}
 
 
   ngOnInit() {
@@ -91,6 +96,16 @@ export class DropDownScheduleComponent implements OnInit {
 
   toggleFavorite() {
     this.isFavorite = !this.isFavorite;
+    if (this.isFavorite) {
+      this.favoritesService.addFavorite({
+        name: this.name,
+        type: "tramStation",
+        stationId: this.stationId,
+        line: this.lineName,
+        lat: 0,
+        lon: 0,
+      });
+    }
   }
 
 }

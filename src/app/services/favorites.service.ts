@@ -1,12 +1,9 @@
 import { Injectable } from '@angular/core';
+import { Storage } from '@ionic/storage';
+import { Favorite } from '../interfaces/favorite';
 
-export interface Favorite {
-  name: string;
-  type: string; //TramStation or Custom
-  stationid: string;
-  lat: number;
-  lon: number;
-}
+const store = new Storage();
+
 
 @Injectable({
   providedIn: 'root',
@@ -14,9 +11,18 @@ export interface Favorite {
 export class FavoritesService {
   public favorites: Favorite[] = [];
 
-  constructor() {}
+  constructor() {
+    store.create().then(() => {
+      store.get('favorites').then((val) => {
+        if (val) {
+          this.favorites = val;
+        }
+      });
+    });
+  }
 
   addFavorite(favorite: Favorite) {
+    store.set('favorites', favorite);
     this.favorites.push(favorite);
   }
 
@@ -47,7 +53,7 @@ export class FavoritesService {
   }
 
   getFavoritesByStationId(stationid: string) {
-    return this.favorites.filter((f) => f.stationid === stationid);
+    return this.favorites.filter((f) => f.stationId === stationid);
   }
 
   getFavoritesByPosition(lat: number, lon: number) {
