@@ -5,11 +5,16 @@ import * as leaflet from 'leaflet';
 import 'leaflet-routing-machine';
 import { Geolocation, Position } from '@capacitor/geolocation';
 import {
+  GeoPoint,
+  Itineraries,
+  leg,
   MTAGAPIService,
   StationsOfLine,
   TramLine,
   TramStation,
 } from '../services/mtag-api.service';
+
+import 'polyline-encoded';
 
 declare var L: any;
 
@@ -76,20 +81,33 @@ export class Tab1Page {
     //   console.log(this.lignesTram);
     // });
 
-    this.MtagService.calcItinerary(
-      45.19270700749426,
-      5.718059703818313,
-      45.189162995391825,
-      5.696816464474088
-    );
+    // console.log(
+    //   this.MtagService.calcItinerary(
+    //     45.19270700749426,
+    //     5.718059703818313,
+    //     45.189162995391825,
+    //     5.696816464474088,
+    //     false,
+    //     '',
+    //     ''
+    //   )
+    // );
+
+    this.getItinerarie();
 
     this.MtagService.getAllTramStations().then((data: any) => {
-      this.markEveryStation();
+      //this.markEveryStation();
+      console.log('HEY');
+      console.log(this.MtagService.TramStations);
     });
 
     console.log(
       this.MtagService.getStopTimesFromStation('SEM:GENLETOILE', 'SEM:A')
     );
+
+    var encoded =
+      'muyrG{x{a@GXW`AADAFHD@@PLjDzBFHLfAh@OBAJCBNd@vD@FD^NG@Jt@`@rAt@BA@EVKJGr@YAE';
+    var polyline = L.Polyline.fromEncoded(encoded).addTo(this.map);
   }
 
   getLocation(): Promise<Position> {
@@ -131,5 +149,23 @@ export class Tab1Page {
         this.markStation(station);
       });
     });
+  }
+
+  getItinerarie() {
+    let from: GeoPoint = { lat: 45.19270700749426, lon: 5.718059703818313 };
+    let to: GeoPoint = { lat: 45.189162995391825, lon: 5.696816464474088 };
+    this.MtagService.calcItinerary(from, to, false, '', '').then(
+      (data: any) => {
+        console.log(data);
+        data.legs.forEach((leg: leg) => {
+          console.log(leg);
+          // leg.legGeometry.points
+          var polyline = L.Polyline.fromEncoded(leg.legGeometry.points);
+          if (leg.mode == 'WALK') polyline.setStyle({ color: 'blue' });
+          else polyline.setStyle({ color: 'red' });
+          polyline.addTo(this.map);
+        });
+      }
+    );
   }
 }

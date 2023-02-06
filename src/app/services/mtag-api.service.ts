@@ -37,6 +37,30 @@ export interface TimesObject {
   minutes: number;
 }
 
+export interface Itineraries {
+  duration: number;
+  startTime: number;
+  endTime: number;
+  legs: leg[];
+}
+
+export interface leg {
+  mode: string;
+  legGeometry: LegGeometry;
+  duration: number;
+  routeId: string;
+}
+
+export interface LegGeometry {
+  points: string;
+  length: number;
+}
+
+export interface GeoPoint {
+  lat: number;
+  lon: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -137,49 +161,74 @@ export class MTAGAPIService {
         console.log(this.TramLines);
         console.log('STATIONS : ');
         console.log(this.TramStations);
-        resolve(true);
+        resolve(this.TramStations);
       });
     });
   }
 
   calcItinerary(
-    LatSource: number,
-    LonSource: number,
-    LatTarget: number,
-    LonTarget: number
+    from: GeoPoint,
+    to: GeoPoint,
+    arriveBy: boolean,
+    time: string,
+    date: string
   ) {
-    // get current date
-    let dateNow = new Date();
+    return new Promise((resolve, reject) => {
+      var url =
+        this.mtagApiUrl +
+        this.URLitineraire +
+        '?routerId=prod&otp=undefined&mode=TRANSIT&showIntermediateStops=true&numItineraries=5&' +
+        `fromPlace=${from.lat},${from.lon}&toPlace=${to.lat},${to.lon}&arriveBy=${arriveBy}&time=${time}&date=${date}&locale=fr_FR`;
+      let dateNow = new Date();
 
-    let time = dateNow.getHours() + ':' + dateNow.getMinutes();
+      time = dateNow.getHours() + ':' + dateNow.getMinutes();
 
-    let date =
-      dateNow.getFullYear() + '-' + dateNow.getMonth() + '-' + dateNow.getDay();
+      date =
+        dateNow.getFullYear() +
+        '-' +
+        dateNow.getMonth() +
+        '-' +
+        dateNow.getDay();
 
-    let url =
-      this.mtagApiUrl +
-      this.URLitineraire +
-      '?routerId=prod' +
-      '&otp=undefined' +
-      '&mode=TRANSIT' +
-      '&showIntermediateStops=true' +
-      '&numItineraries=3' +
-      '&fromPlace=' +
-      LatSource +
-      ',' +
-      LonSource +
-      '&toPlace=' +
-      LatTarget +
-      ',' +
-      LonTarget +
-      '&arriveBy=false' +
-      '&time=' +
-      time +
-      '&date=' +
-      date +
-      '&locale=fr_FR';
-    console.log(url);
-    console.log(this.http.get(url));
+      this.http
+        .get(url, {
+          headers: {
+            Origin: 'https://www.armieux.fr',
+          },
+        })
+        .subscribe((data: any) => {
+          console.log('CALC ITINERARY');
+          console.log(url);
+          console.log(data);
+          let test: string[] = [];
+          // chaques itinéraires
+          let Itinerarie: Itineraries = {
+            duration: 0,
+            legs: [],
+            startTime: 0,
+            endTime: 0,
+          };
+
+          let minDuration: number = 0;
+
+          data.plan.itineraries.forEach((element: Itineraries) => {
+            console.log('ITINERARY :');
+            // get min duration
+            if (minDuration === 0) {
+              minDuration = element.duration;
+              Itinerarie = element;
+            } else if (minDuration > element.duration) {
+              minDuration = element.duration;
+              Itinerarie = element;
+            }
+            console.log(element);
+          });
+          console.log('ITINERARIE : ');
+          console.log(Itinerarie);
+          resolve(Itinerarie);
+          return Itinerarie;
+        });
+    });
   }
 
   getTramStationsOfLine(id: string) {
