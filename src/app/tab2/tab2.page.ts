@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { StationsOfLine } from '../interfaces/stations-of-line';
+import { MTAGAPIService } from '../services/mtag-api.service';
 
 @Component({
   selector: 'app-tab2',
@@ -7,6 +9,16 @@ import { Component } from '@angular/core';
 })
 export class Tab2Page {
 
-  constructor() {}
+  constructor(public mtagService: MTAGAPIService) {}
+  tramStations: StationsOfLine[] = [];
+
+  ngOnInit() {
+    this.mtagService.getAllTramStations().then((data:any ) => {
+      this.tramStations = data;
+      console.log(
+        this.tramStations
+      );
+    });
+  }
 
 }

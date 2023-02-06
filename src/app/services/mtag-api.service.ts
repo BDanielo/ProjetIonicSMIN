@@ -32,21 +32,22 @@ export class MTAGAPIService {
 
   // get stop times from station id and line id | use TramStations.TramTramStation.id and TramStations.TramLines.id
   getStopTimesFromStation(station: string, line: string) {
+    console.log("GET STOP TIMES FROM STATION : " + station + " | " + line);
     return new Promise((resolve, reject) => {
       let url =
         this.mtagApiUrl +
         this.URLhorairesArret.replace(':station', station).replace(':line', line);
   
-      // console.log('STOP TIMES | URL : ' + url);
+      console.log('STOP TIMES | URL : ' + url);
   
       this.http
         .get(url, {
-          headers: {
-            Origin: 'https://www.armieux.fr',
-          },
+          // headers: {
+          //   Origin: 'https://www.armieux.fr',
+          // },
         })
         .subscribe((data: any) => {
-          // console.log('GET HORAIRE DATA : ');
+          console.log('GET HORAIRE DATA : ');
           console.log(data);
   
           let lineSchedules: LineSchedule[] = [];
@@ -67,7 +68,6 @@ export class MTAGAPIService {
           // console.log('LINE SCHEDULES : ');
           // console.log(lineSchedules);
           resolve(lineSchedules);
-          return lineSchedules;
         });
     });
   }
@@ -84,7 +84,6 @@ export class MTAGAPIService {
         .get(this.mtagApiUrl + this.URLlignes.replace(':transport', 'TRAM'))
         .subscribe((data: any) => {
           this.TramLines = data;
-          // console.log(this.lignesTram);
           resolve(this.TramLines);
         });
     });

@@ -10,9 +10,10 @@
       <ion-title size="large">Tab 2</ion-title>
     </ion-toolbar>
   </ion-header>
-  <app-drop-down-schedule
-    [name]="'Gare Grenoble Universit Gière'"
+  <!-- <app-drop-down-schedule
+    [name]="'Gare Grenoble Université Gière'"
     [lineName]="'C'"
+    [isAlert]="true"
   >
   </app-drop-down-schedule>
 
@@ -21,5 +22,9 @@
     [lineName]="'B'"
     [isAlert]="true"
   >
-  </app-drop-down-schedule>
+  </app-drop-down-schedule> -->
+
+  <div *ngFor="let line of tramStations" >
+    <app-global-drop-down [lineName]="line.Line.replace('SEM:','')" [tramStations]="line.TramStation"></app-global-drop-down>
+  </div>
 </ion-content>

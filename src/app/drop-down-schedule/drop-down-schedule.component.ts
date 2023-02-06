@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { LineSchedule } from '../interfaces/line-schedule';
+import { MTAGAPIService } from '../services/mtag-api.service';
 
 interface LineColor {
   [key: string]: string;
@@ -15,7 +16,9 @@ export class DropDownScheduleComponent implements OnInit {
   @Input() name: string = "Grenoble Gare"; 
   @Input() lineName: string = "B";
   @Input() isAlert: boolean = false;
-  @Input() linesSchedule: Array<LineSchedule> | undefined;
+  @Input() stationId: string = "";
+
+  linesSchedule: Array<LineSchedule> | undefined;
 
   lineColor: LineColor = {
     A: "#3376B8",
@@ -32,33 +35,36 @@ export class DropDownScheduleComponent implements OnInit {
     C7: "#FF0000",
   }
   
-  color = this.lineColor[this.lineName];
+  color:string = "";
+  customWidth = 65;
 
-  constructor() { }
+  constructor(public mtagService: MTAGAPIService) { }
 
 
   ngOnInit() {
-    this.linesSchedule = [
-      {
-        "direction": "Grenoble Gare",
-        "times": ["10:00", "10:30"]
-      },
-      {
-        "direction": "Victor Hugo",
-        "times": ["9:00", "10:30"]
-      },
-      {
-        "direction": "Palais des Sports",
-        "times": ["6:00", "10:30"]
-      }
-    ]
+    this.color = this.lineColor[this.lineName];
+    if (this.isAlert) {
+      this.customWidth = 50;
+    }
   }
 
   isOpen = false;
   isFavorite = false;
 
+  getSchedule(){
+    this.mtagService.getStopTimesFromStation(this.stationId, "SEM:" + this.lineName).then((data:any ) => {
+      this.linesSchedule = data;
+      console.log(
+        data
+      );
+    });
+  }
+
   toggleDropDown() {
     this.isOpen = !this.isOpen;
+    if (this.isOpen) {
+      this.getSchedule();
+    }
   }
 
   toggleFavorite() {

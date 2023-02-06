@@ -1,16 +1,16 @@
 <div class="DropDown">
-  <div class="dropDown_header" (click)="toggleDropDown()">
-    <div id="lineName" style="background-color: {{ color }};">
+  <div class="dropDown_header">
+    <div (click)="toggleDropDown()" id="lineName" style="background-color: {{ color }};">
       {{ lineName }}
     </div>
-    <div id="name">
+    <div (click)="toggleDropDown()" id="name" style="width: {{ customWidth }}%;">
       {{ name }}
     </div>
-    <ion-icon *ngIf="isAlert"  id="alert" name="warning" style="color:yellow;"></ion-icon>
-    <ion-icon *ngIf="isOpen" id="chevron" name="chevron-up-circle-outline"></ion-icon>
-    <ion-icon *ngIf="!isOpen" id="chevron"  name="chevron-down-circle-outline"></ion-icon>
+    <ion-icon *ngIf="isAlert" (click)="toggleDropDown()" id="alert" name="warning" style="color:yellow;"></ion-icon>
+    <ion-icon *ngIf="isOpen" (click)="toggleDropDown()" id="chevron" name="chevron-up-circle-outline"></ion-icon>
+    <ion-icon *ngIf="!isOpen" (click)="toggleDropDown()" id="chevron"  name="chevron-down-circle-outline"></ion-icon>
     <ion-icon *ngIf="!isFavorite" (click)="toggleFavorite()"  id="favorite" name="heart-outline"></ion-icon>
-    <ion-icon *ngIf="isFavorite" (click)="toggleFavorite()" id="favorite" name="heart" style="color:red;"></ion-icon>
+    <ion-icon *ngIf="isFavorite" (click)="toggleFavorite()" id="favorite" name="heart" style="color:rgb(255, 50, 50);"></ion-icon>
 
   </div>
   <div *ngIf="isOpen"  class="dropDown_body">
@@ -21,10 +21,10 @@
             {{ lineSchedule.direction }} :
           </div>
           <div class="lineSchedule_time">
-            {{ lineSchedule.times[0] }}
+            {{ lineSchedule.times[0] }} min
           </div>
           <div class="lineSchedule_time">
-            {{ lineSchedule.times[1] }}
+            {{ lineSchedule.times[1] }} min
           </div>
         </div>
       </div>

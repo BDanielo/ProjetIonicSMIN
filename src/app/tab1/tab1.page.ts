@@ -4,12 +4,12 @@ import { Component } from '@angular/core';
 import * as leaflet from 'leaflet';
 import 'leaflet-routing-machine';
 import { Geolocation, Position } from '@capacitor/geolocation';
-import {
-  MTAGAPIService,
-  StationsOfLine,
-  TramLine,
-  TramStation,
-} from '../services/mtag-api.service';
+import {  MTAGAPIService } from '../services/mtag-api.service';
+import { TramStation } from '../interfaces/tram-station';
+import { TramLine } from '../interfaces/tram-line';
+import { LineSchedule } from '../interfaces/line-schedule';
+import { StationsOfLine } from '../interfaces/stations-of-line';
+
 
 declare var L: any;
 

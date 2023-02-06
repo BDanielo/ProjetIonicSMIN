@@ -11,6 +11,7 @@ import { ExploreContainerComponentModule } from '../explore-container/explore-co
 import { DropDownScheduleComponent } from '../drop-down-schedule/drop-down-schedule.component';
 
 import { Tab2PageRoutingModule } from './tab2-routing.module';
+import { GlobalDropDownComponent } from '../global-drop-down/global-drop-down.component';
 
 @NgModule({
   imports: [
@@ -20,7 +21,7 @@ import { Tab2PageRoutingModule } from './tab2-routing.module';
     ExploreContainerComponentModule,
     Tab2PageRoutingModule,
   ],
-  declarations: [Tab2Page, DropDownScheduleComponent],
+  declarations: [Tab2Page, DropDownScheduleComponent, GlobalDropDownComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
 })
 export class Tab2PageModule {}
