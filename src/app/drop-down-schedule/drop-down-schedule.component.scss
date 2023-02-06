@@ -1,0 +1,151 @@
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropDown_header {
+    background-color: #3D3131;
+    width: 90vw;
+    height: 3em;
+    border: 3px solid #ccc;
+    border-radius: 10px;
+    padding: 0px;
+    margin: 0px;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none;
+    font-size: 15px;
+    margin-left: 5vw;
+    margin-top: 1vh;
+    z-index: auto;
+    vertical-align: middle;
+
+}
+
+.dropDown_header::active {
+    background-color: #ccc;
+}
+
+#lineName{
+    border-radius: 8px 0px 0px 8px;
+}
+
+#name, #lineName {
+    height: 2.7em;
+    font-size: 15px;
+    font-weight: bold;
+    float: left;
+    padding: 0.5em;
+    vertical-align: middle;
+    margin-top: auto;
+    margin-bottom: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.dropDown_body{
+    z-index: auto;
+
+}
+
+.dropDown_body_content {
+    padding: 0px;
+    margin: 0px;
+    background-color: #2C2121;
+    width: 89vw;
+    margin-left: 5.4vw;
+    transform: translate(0, -0.5em);
+    border-radius: 0px 0px 10px 10px;
+    padding-bottom: 1vh;
+}
+
+.dropDown_body_content {
+    -webkit-animation: fadein 0.5s; /* Safari, Chrome and Opera > 12.1 */
+    -moz-animation: fadein 0.5s; /* Firefox < 16 */
+    -ms-animation: fadein 0.5s; /* Internet Explorer */
+    -o-animation: fadein 0.5s; /* Opera < 12.1 */
+    animation: fadein 0.5s;
+
+    position: relative;
+    z-index: -1;
+
+
+
+}
+
+#favorite {
+    float: right;
+    padding: 0.5em;
+    vertical-align: middle;
+    font-size: 20px;
+}
+
+@-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@-moz-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@-ms-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@-o-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+#chevron{
+    float: right;
+    padding: 0.5em;
+    vertical-align: middle;
+    font-size: 20px;
+}
+
+#alert{
+    padding: 0.5em;
+    vertical-align: middle;
+    font-size: 20px;
+}
+
+.lineSchedule{
+    display: inline-block;
+    width: 100%;
+    padding: 0.5em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    font-size: 15px;
+    color: white;
+    margin-top: 2vh;
+
+}
+
+.lineSchedule_direction{
+    font-weight: bold;
+    width: 50%;
+}
+.lineSchedule_time {
+    width: 25%;
+}
+
+.lineSchedule_direction, .lineSchedule_time {
+    margin: 0px;
+    padding: 0px;
+    display: inline-block;
+    text-align: center;
+}
