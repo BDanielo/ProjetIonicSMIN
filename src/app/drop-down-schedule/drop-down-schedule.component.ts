@@ -37,6 +37,7 @@ export class DropDownScheduleComponent implements OnInit {
   
   color:string = "";
   customWidth = 65;
+  timerInterval: any;
 
   constructor(public mtagService: MTAGAPIService) { }
 
@@ -48,6 +49,13 @@ export class DropDownScheduleComponent implements OnInit {
     }
   }
 
+  ngOnDestroy() {
+    if (this.timerInterval != null){
+      clearInterval(this.timerInterval);
+    }
+  }
+
+
   isOpen = false;
   isFavorite = false;
 
@@ -57,13 +65,20 @@ export class DropDownScheduleComponent implements OnInit {
       console.log(
         data
       );
-    });
+    });   
+    
   }
 
   toggleDropDown() {
     this.isOpen = !this.isOpen;
     if (this.isOpen) {
       this.getSchedule();
+      this.timerInterval = setInterval(() => {
+        this.getSchedule();
+      }, 30000);
+    } else if (this.timerInterval != null){
+      clearInterval(this.timerInterval);
+
     }
   }
 
