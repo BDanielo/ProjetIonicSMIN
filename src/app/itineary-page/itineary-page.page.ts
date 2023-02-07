@@ -10,7 +10,8 @@ import {
 } from '../services/mtag-api.service';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { FavoritesService } from '../services/favorites.service';
-
+import { Recent } from '../interfaces/recent';
+import { StorageService } from '../services/storage.service';
 const select = 'selected';
 
 @Component({
@@ -33,6 +34,7 @@ export class ItinearyPagePage implements OnInit {
   constructor(
     public MtagService: MTAGAPIService,
     public favoritesService: FavoritesService,
+    public storageService: StorageService,
     public navCtrl: NavController
   ) {
     this.navigationExtras = {
@@ -71,6 +73,9 @@ export class ItinearyPagePage implements OnInit {
   classSelectionDepart = select;
   classSelectionArrival = '';
   chosenDate = '';
+  isFrom = true;
+
+  recents: Recent[] = [];
 
   StartItineraryMarker: AddressDetails | undefined;
 
@@ -91,6 +96,11 @@ export class ItinearyPagePage implements OnInit {
 
   ngOnInit() {
     this.favorites = this.favoritesService.getFavoritesByType('location');
+    this.storageService.getRecent().then((val) => {
+      if (val) {
+        this.recents = val;
+      }
+    });
   }
 
   goToMap() {
@@ -134,11 +144,25 @@ export class ItinearyPagePage implements OnInit {
     this.isDepart = false;
   }
 
-  favSelected(fav: Favorite) {
-    console.log(fav);
+  favSelected(fav: string) {
+    if (this.isFrom) {
+      this.fromSearch = fav;
+      this.toSearchConfirmed = fav
+      this.isFrom = false;
+    } else {
+      this.toSearch = fav;
+      this.fromSearchConfirmed = fav
+      this.isFrom = true;
+    }
   }
 
-  searchBarFocused() {}
+  searchBarFromFocused() {
+    this.isFrom = true;
+  }
+
+  searchBarToFocused() {
+    this.isFrom = false;
+  }
 
   onSearchChange(direction: number) {
     this.SearchResultsTab[direction] = [];
@@ -151,19 +175,41 @@ export class ItinearyPagePage implements OnInit {
     }
   }
 
+  roundTime(num: number) {
+    let tmp = Math.round(num);
+    if (tmp >= 60) {
+      let nutmp = Math.round(tmp / 60);
+      return nutmp + 'h' + (tmp - nutmp * 60);
+    }
+    return tmp + 'min';
+  }
+
   changeSearch(direction: number, value: string) {
-    console.log('direction : ' + direction + ' value : ' + value);
+    this.updateRecent(value);
     this.SearchResultsTab[direction] = [];
     if (direction == 0) {
       this.fromSearch = value;
       this.fromSearchConfirmed = value;
-      // get element with id fromInput and set text color to green
       document.getElementById('fromInput')!.style.color = 'white';
     } else if (direction == 1) {
       this.toSearch = value;
       this.toSearchConfirmed = value;
       document.getElementById('toInput')!.style.color = 'white';
     }
+  }
+
+  updateRecent(val: string){
+    let tmp = this.recents.filter((recent) => recent.name == val);
+    if (tmp.length > 0) {
+      return;
+    }
+    if (this.recents.length > 4) {
+      this.recents.pop()
+    }
+
+    this.recents.unshift({name: val, lat: 0, lon: 0});
+    this.storageService.updateRecent(this.recents);
+
   }
 
   searchAutocomplete(event: any, direction: number) {
@@ -203,15 +249,6 @@ export class ItinearyPagePage implements OnInit {
         "Veuillez sélectionner une station d'arrivée et une station de départ"
       );
     }
-  }
-
-  roundTime(num: number) {
-    let tmp = Math.round(num);
-    if (tmp >= 60) {
-      let nutmp = Math.round(tmp / 60);
-      return nutmp + 'h' + (tmp - nutmp * 60);
-    }
-    return tmp + 'min';
   }
 
   calcItenerary() {

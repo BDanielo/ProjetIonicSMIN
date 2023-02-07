@@ -1,3 +1,4 @@
+import { Recent } from './../interfaces/recent';
 import { Favorite } from './../interfaces/favorite';
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
@@ -24,7 +25,7 @@ export class StorageService {
     });
   }
 
-  getRecent(): Promise<Favorite[]> {
+  getRecent(): Promise<Recent[]> {
     return store.get('recent').then((val) => {
       if (val) {
         return val;
@@ -36,7 +37,7 @@ export class StorageService {
     store.set('favorites', favorites);
   }
 
-  updateRecent(recent: Favorite[]) {
+  updateRecent(recent: Recent[]) {
     store.set('recent', recent);
   }
 }

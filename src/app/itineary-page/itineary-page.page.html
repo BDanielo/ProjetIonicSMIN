@@ -19,12 +19,12 @@
         animated
         show-clear-button="focus"
         autocomplete="street-address"
-        (ionFocus)="searchBarFocused()"
         [(ngModel)]="fromSearch"
         (ionInput)="onSearchChange(0)"
         (ionChange)="searchAutocomplete($event,0)"
         (keyup.enter)="searchAutocomplete($event,0)"
         [debounce]="500"
+        (ionFocus)="searchBarFromFocused()"
       ></ion-searchbar>
     </div>
     <ion-item *ngIf="SearchLoading[0]">
@@ -46,13 +46,13 @@
         animated
         show-clear-button="focus"
         showCancelButton="focus"
-        showCancelButton="focus"
         [(ngModel)]="toSearch"
         (keyup.enter)="searchAutocomplete($event,1)"
         (ionInput)="onSearchChange(1)"
         [debounce]="500"
         (ionChange)="searchAutocomplete($event,1)"
         autocomplete="street-address"
+        (ionFocus)="searchBarToFocused()"
       ></ion-searchbar>
     </div>
     <ion-item *ngIf="SearchLoading[1]===true">
@@ -85,14 +85,14 @@
           <ion-content [scrollEvents]="true">
             <ion-list *ngIf="isFav">
               <ion-item *ngFor="let fav of favorites">
-                <ion-label (click)="favSelected(fav)">{{ fav.name }}</ion-label>
+                <ion-label (click)="favSelected(fav.name)">{{ fav.name }}</ion-label>
               </ion-item>
             </ion-list>
           </ion-content>
           <ion-list *ngIf="!isFav">
             <ion-content [scrollEvents]="true">
-              <ion-item *ngFor="let fav of favorites">
-                <ion-label>{{ fav.type }}</ion-label>
+              <ion-item *ngFor="let recent of recents">
+                <ion-label (click)="favSelected(recent.name)">{{ recent.name }}</ion-label>
               </ion-item>
             </ion-content>
           </ion-list>
