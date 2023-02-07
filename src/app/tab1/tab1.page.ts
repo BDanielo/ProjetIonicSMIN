@@ -3,7 +3,6 @@ import { Component } from '@angular/core';
 // import leaflet routing machine
 import * as leaflet from 'leaflet';
 import 'leaflet-routing-machine';
-//import 'leaflet-control-geocoder';
 import { Geolocation, Position } from '@capacitor/geolocation';
 import {  MTAGAPIService } from '../services/mtag-api.service';
 import { TramStation } from '../interfaces/tram-station';
@@ -11,7 +10,6 @@ import { TramLine } from '../interfaces/tram-line';
 import { LineSchedule } from '../interfaces/line-schedule';
 import { StationsOfLine } from '../interfaces/stations-of-line';
 
-import 'polyline-encoded';
 
 declare var L: any;
 
@@ -24,17 +22,6 @@ export class Tab1Page {
   map: L.Map | undefined;
 
   lignesTram: TramLine[] = [];
-
-  TramLineLayer: any;
-  ItinerarieLayer: any;
-  TramStationLayer: any;
-
-  markerSearch: any;
-
-  fromSearch: string = 'gare de grenoble';
-  toSearch: string = '33 avenue aristide briand';
-
-  SearchResults: AddressDetails[] = [];
 
   constructor(public MtagService: MTAGAPIService) {}
   //constructor() {}
@@ -53,18 +40,6 @@ export class Tab1Page {
       })
       .addTo(this.map);
 
-    // add geocoder control
-    // L.Control.geocoder().addTo(this.map);
-
-    // add tram line layer
-    this.TramLineLayer = L.layerGroup().addTo(this.map);
-
-    // add itinerarie layer
-    this.ItinerarieLayer = L.layerGroup().addTo(this.map);
-
-    // add tram station layer
-    this.TramStationLayer = L.layerGroup().addTo(this.map);
-
     // add marker IUT1
     const IUT1 = leaflet
       .marker([45.19270700749426, 5.718059703818313])
@@ -75,42 +50,53 @@ export class Tab1Page {
     // get localisation
     this.getLocation();
 
-    // console.log(test);
+    // add marker for each tramA element
+    // this.tramA.forEach((element) => {
+    //   const marker = leaflet
+    //     .marker([element.lat, element.lon])
+    //     .addTo(this.map!);
+    //   marker.bindPopup(element.name);
+    //   this.map!.addLayer(marker);
+    // });
 
-    // this.MtagService.getStopTimesFromStation('SEM:GENLETOILE', 'SEM:A').then(
-    //   (data: any) => {
-    //     console.log('GET STOPS FROM STATION');
-    //     console.log(data);
-    //   }
-    // );
+    // L.Routing.control({
+    //   waypoints: [
+    //     L.latLng(45.19270700749426, 5.718059703818313),
+    //     L.latLng(45.18912, 5.69409),
+    //   ],
+    // }).addTo(this.map);
 
-    let from: GeoPoint = { lat: 45.19270700749426, lon: 5.718059703818313 };
-    let to: GeoPoint = { lat: 45.189162995391825, lon: 5.696816464474088 };
+    // this.MtagService.getTramStation('SEM:A').subscribe((data: any) => {
+    //   this.tramA = data;
+    //   console.log(this.tramA);
+    // });
 
-    // 45.191247592086214, 5.713803536078038
-    let gare: GeoPoint = { lat: 45.191247592086214, lon: 5.713803536078038 };
+    // this.MtagService.getTramLines().subscribe((data: any) => {
+    //   this.lignesTram = data;
+    //   console.log(this.lignesTram);
+    // });
 
-    // this.markStations();
-    this.markLines();
-    // this.getItinerarie(from, to);
-
-    this.MtagService.searchGeocoding('gare grenoble').then((data: any) => {});
-
-    this.MtagService.searchGeocoding('33 avenue aristide briand').then(
-      (data: any) => {}
+    this.MtagService.calcItinerary(
+      45.19270700749426,
+      5.718059703818313,
+      45.189162995391825,
+      5.696816464474088
     );
 
-    // this.MtagService.getAllTramStations().then((data: any) => {
-    //   console.log('GET ALL STATIONS 2//');
-    //   this.MtagService.getAllTramStations().then((data: any) => {});
-    // });
+    this.MtagService.getAllTramStations().then((data: any) => {
+      this.markEveryStation();
+    });
+
+    console.log(
+      this.MtagService.getStopTimesFromStation('SEM:GENLETOILE', 'SEM:A')
+    );
   }
 
   getLocation(): Promise<Position> {
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition()
         .then((position: any) => {
-          // console.log('location from service : ', position);
+          console.log('location from service : ', position);
           resolve(position);
           // set map localisation
           this.map?.setView(
@@ -130,165 +116,20 @@ export class Tab1Page {
     });
   }
 
-  getItinerarie(from: GeoPoint, to: GeoPoint) {
-    this.map!.removeLayer(this.TramLineLayer);
-    this.map!.removeLayer(this.TramStationLayer);
-    this.ItinerarieLayer.clearLayers();
-    this.ItinerarieLayer = L.layerGroup().addTo(this.map);
-    this.MtagService.calcItinerary(from, to, false, '', '').then(
-      (data: any) => {
-        // console.log(data);
-        data.legs.forEach((leg: leg) => {
-          // console.log(leg);
-          // leg.legGeometry.points
-          var polyline = L.Polyline.fromEncoded(leg.legGeometry.points);
-          if (leg.mode == 'WALK') {
-            polyline.setStyle({ color: 'red' });
-          } else polyline.setStyle({ color: 'blue' });
-          this.ItinerarieLayer.addLayer(polyline);
-        });
-      }
-    );
+  markStation(station: TramStation) {
+    const marker = leaflet.marker([station.lat, station.lon]).addTo(this.map!);
+    marker.bindPopup(station.name);
+    this.map!.addLayer(marker);
   }
 
-  getItinerarieFromSearch(from: string, to: string) {
-    this.MtagService.searchGeocoding(from).then((data: any) => {
-      let from: GeoPoint = {
-        lat: data.lat,
-        lon: data.lon,
-      };
-      this.MtagService.searchGeocoding(to).then((data: any) => {
-        let to: GeoPoint = {
-          lat: data.lat,
-          lon: data.lon,
-        };
-        this.getItinerarie(from, to);
+  markEveryStation() {
+    console.log('MARK EVERY STATION');
+    this.MtagService.TramStations.forEach((Line) => {
+      console.log(Line);
+      Line.TramStation.forEach((station) => {
+        console.log(station);
+        this.markStation(station);
       });
-    });
-  }
-
-  // get tram lines add them to a layer and add the layer to the map
-  markLines() {
-    return new Promise((resolve, reject) => {
-      this.map!.removeLayer(this.ItinerarieLayer);
-      this.map!.removeLayer(this.TramStationLayer);
-      this.TramLineLayer = L.layerGroup().addTo(this.map);
-      this.MtagService.getTramLines().then((data: any) => {
-        this.lignesTram = data;
-        // console.log('Lignes de tram');
-        // console.log(data);
-        this.lignesTram.forEach((ligne: TramLine) => {
-          this.MtagService.getLinesPolyline(ligne.id).then((data: any) => {
-            let LineGeoPoints = data.features[0].properties.shape[0];
-            // console.log(LineGeoPoints);
-            var polyline = L.Polyline.fromEncoded(LineGeoPoints);
-            // console.log(ligne.color);
-            polyline.setStyle({ color: '#' + ligne.color });
-            this.TramLineLayer.addLayer(polyline);
-
-            // if last element
-            if (this.lignesTram[this.lignesTram.length - 1] == ligne) {
-              resolve('done');
-            }
-          });
-        });
-      });
-    });
-  }
-
-  // get all tram stations and add them to a layer and add the layer to the map
-  markStations() {
-    this.markLines().then(() => {
-      this.TramStationLayer = L.layerGroup().addTo(this.map);
-      this.MtagService.getAllTramStations().then((data: any) => {
-        console.log(data);
-        data.forEach((line: StationsOfLine) => {
-          line.TramStation.forEach((station: TramStation) => {
-            const marker = L.marker([station.lat, station.lon]).addTo(
-              this.map!
-            );
-            marker.bindPopup(station.name);
-            this.TramStationLayer.addLayer(marker);
-          });
-        });
-      });
-    });
-  }
-
-  //   search(event: any) {
-  //     const query = event.target.value.toLowerCase();
-  //     console.log(query);
-  //     if (query.length > 3) {
-  //       this.MtagService.searchGeocoding(query).then((data: any) => {
-  //         console.log('AH');
-  //         console.log(data);
-  //         // create a marker for the result
-  //         if (this.markerSearch) this.map?.removeLayer(this.markerSearch);
-  //         this.markerSearch = L.marker([data.lat, data.lon]).addTo(this.map!);
-
-  //         let buttonAller = `<ion-button
-  //         (click)="search('test')"
-  //         >-> Aller vers</ion-button>`;
-
-  //         let buttonFav = `<ion-button><ion-icon name="heart-outline"></ion-icon></ion-button>`;
-
-  //         let popupContent = '<p>' + data.name + '</p>' + buttonAller + buttonFav;
-  //         this.markerSearch.bindPopup(popupContent);
-  //         this.map?.setView([data.lat, data.lon], 20);
-  //         this.markerSearch.openPopup();
-  //       });
-  //     }
-  //     // search
-  //     // this.MtagService.searchGeocoding(query).then((data: any) => {
-  //     //   console.log(data);
-  //     // });
-  //   }
-  // }
-
-  searchAutocomplete(event: any) {
-    const query = event.target.value.toLowerCase();
-    // console.log(query);
-    if (query.length > 3) {
-      this.MtagService.searchAutocomplete(query).then((data: any) => {
-        // console.log('AH');
-        // console.log(data);
-        this.SearchResults = data;
-        //   // create a marker for the result
-        //   if (this.markerSearch) this.map?.removeLayer(this.markerSearch);
-        //   this.markerSearch = L.marker([data.lat, data.lon]).addTo(this.map!);
-
-        //   let buttonAller = `<ion-button
-        // (click)="search('test')"
-        // >-> Aller vers</ion-button>`;
-
-        //   let buttonFav = `<ion-button><ion-icon name="heart-outline"></ion-icon></ion-button>`;
-
-        //   let popupContent = '<p>' + data.name + '</p>' + buttonAller + buttonFav;
-        //   this.markerSearch.bindPopup(popupContent);
-        //   this.map?.setView([data.lat, data.lon], 20);
-        //   this.markerSearch.openPopup();
-      });
-    }
-  }
-
-  search(lat: number, lon: number) {
-    this.MtagService.reverseGeoCoding(lat, lon).then((data: any) => {
-      // console.log('AH');
-      // console.log(data);
-      this.SearchResults = data;
-      if (this.markerSearch) this.map?.removeLayer(this.markerSearch);
-      this.markerSearch = L.marker([data.lat, data.lon]).addTo(this.map!);
-
-      let buttonAller = `<ion-button
-        (click)="search('test')"
-        >-> Aller vers</ion-button>`;
-
-      let buttonFav = `<ion-button><ion-icon name="heart-outline"></ion-icon></ion-button>`;
-
-      let popupContent = '<p>' + data.name + '</p>' + buttonAller + buttonFav;
-      this.markerSearch.bindPopup(popupContent);
-      this.map?.setView([data.lat, data.lon], 20);
-      this.markerSearch.openPopup();
     });
   }
 }
