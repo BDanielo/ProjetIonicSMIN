@@ -83,13 +83,16 @@
 
         <div id="list">
           <ion-content [scrollEvents]="true">
-            <ion-list *ngIf="isFav">
+            <ion-list *ngIf="isFav && favorites.length > 0">
               <ion-item *ngFor="let fav of favorites">
                 <ion-label (click)="favSelected(fav)">{{ fav.name }}</ion-label>
               </ion-item>
             </ion-list>
+            <ion-label *ngIf="isFav && favorites.length === 0">
+              Aucun favoris
+            </ion-label>
           </ion-content>
-          <ion-list *ngIf="!isFav">
+          <ion-list *ngIf="!isFav && recents.length > 0">
             <ion-content [scrollEvents]="true">
               <ion-item *ngFor="let recent of recents">
                 <ion-label (click)="recentSelected(recent)"
@@ -98,6 +101,9 @@
               </ion-item>
             </ion-content>
           </ion-list>
+          <ion-label *ngIf="!isFav && recents.length === 0">
+            Aucune recherche récente
+          </ion-label>
         </div>
       </div>
 

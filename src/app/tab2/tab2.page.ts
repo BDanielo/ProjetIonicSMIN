@@ -15,9 +15,23 @@ export class Tab2Page {
   ngOnInit() {
     this.mtagService.getAllTramStations().then((data:any ) => {
       this.tramStations = data;
-      // console.log(
-      //   this.tramStations
-      // );
+      this.tramStations.sort((a, b) => {
+        if (a.Line.length > b.Line.length) {
+          return 1;
+        } else if (a.Line.length < b.Line.length) {
+          return -1;
+        } else {
+          if (a.Line > b.Line) {
+            return 1;
+          } else if (a.Line < b.Line) {
+            return -1;
+          } else {
+            return 0;
+          }
+        }
+      }
+      );
+
     });
   }
 
