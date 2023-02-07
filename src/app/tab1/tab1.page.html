@@ -1,15 +1,67 @@
+<!-- <link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"
+/> -->
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title> Carte </ion-title>
   </ion-toolbar>
 </ion-header>
 
+<style>
+  .recherche {
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    background-color: white;
+  }
+</style>
+
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Carte </ion-title>
+      <ion-title size="large">Carte</ion-title>
     </ion-toolbar>
   </ion-header>
+  <div class="recherche">
+    <ion-searchbar
+      id="searchbar"
+      placeholder="Recherchez une adresse !"
+      animated
+      showCancelButton="focus"
+      (keyup.enter)="searchAutocomplete($event)"
+      autocomplete="street-address"
+    ></ion-searchbar>
+    <ion-list *ngIf="SearchResults.length>0">
+      <ion-item
+        *ngFor="let item of SearchResults"
+        (click)="search(item.lat,item.lon)"
+      >
+        {{ item.name }}
+      </ion-item>
+    </ion-list>
+  </div>
 
+  <!-- <ion-searchbar
+    id="from"
+    placeholder="Depart"
+    animated
+    showCancelButton="focus"
+    autocomplete="street-address"
+    [(ngModel)]="fromSearch"
+  ></ion-searchbar>
+  <ion-searchbar
+    id="to"
+    placeholder="Arrivée"
+    animated
+    showCancelButton="focus"
+    [(ngModel)]="toSearch"
+    (keyup.enter)="getItinerarieFromSearch(fromSearch, toSearch)"
+    autocomplete="street-address"
+  ></ion-searchbar> -->
   <div id="map" style="width: 100%; height: 100%"></div>
+
+  <!-- create a search bar on top center  -->
 </ion-content>
