@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-button (click)="goToMap()" fill="outline" color="light">
+      <ion-icon name="arrow-back"></ion-icon>
+    </ion-button>
+    <ion-title>Itinéraire</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div id="buttonsContainers">
+    <div class="buttonContainer">
+      <ion-icon name="location-sharp"></ion-icon>
+      <ion-searchbar
+        id="from"
+        placeholder="Depart"
+        animated
+        showCancelButton="focus"
+        autocomplete="street-address"
+      ></ion-searchbar>
+
+    </div>
+    <div class="buttonContainer">
+      <ion-icon name="pin-sharp"></ion-icon>
+      <ion-searchbar
+        id="to"
+        placeholder="Arrivée"
+        animated
+        showCancelButton="focus"
+      ></ion-searchbar>
+    </div>
+
+    <div id="quickSearch">
+      <div id="whitchSearch">
+        <p (click)="toggleQuickSearchFav()" id="{{ classSelectionFav }}">Favoris</p>
+        <p (click)="toggleQuickSearchRecent()" id="{{ classSelectionRecent }}">Récent</p>
+      </div>
+
+      <div id="list">
+        <ion-list *ngIf="isFav" >
+          <ion-item *ngFor="let fav of favorites">
+            <ion-label (click)="favSelected(fav)" >{{ fav.name }}</ion-label>
+          </ion-item>
+        </ion-list>
+        <ion-list *ngIf="!isFav" >
+          <ion-item *ngFor="let fav of favorites">
+            <ion-label >{{ fav.type }}</ion-label>
+          </ion-item>
+        </ion-list>
+      </div>
+
+      <ion-button id="submitButton" (click)="search()">Rechercher</ion-button>
+    </div>
+  </div>
+
+
+</ion-content>

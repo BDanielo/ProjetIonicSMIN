@@ -5,6 +5,10 @@ const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+  },
+  {
+    path: 'itineary-page',
+    loadChildren: () => import('./itineary-page/itineary-page.module').then( m => m.ItinearyPagePageModule)
   }
 ];
 @NgModule({
