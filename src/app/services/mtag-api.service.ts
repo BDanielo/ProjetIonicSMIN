@@ -4,7 +4,6 @@ import { LineSchedule } from '../interfaces/line-schedule';
 import { TramLine } from '../interfaces/tram-line';
 import { StationsOfLine } from '../interfaces/stations-of-line';
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -32,24 +31,26 @@ export class MTAGAPIService {
 
   // get stop times from station id and line id | use TramStations.TramTramStation.id and TramStations.TramLines.id
   getStopTimesFromStation(station: string, line: string) {
-    console.log("GET STOP TIMES FROM STATION : " + station + " | " + line);
     return new Promise((resolve, reject) => {
       let url =
         this.mtagApiUrl +
-        this.URLhorairesArret.replace(':station', station).replace(':line', line);
-  
-      console.log('STOP TIMES | URL : ' + url);
-  
+        this.URLhorairesArret.replace(':station', station).replace(
+          ':line',
+          line
+        );
+
+      // console.log('STOP TIMES | URL : ' + url);
+
       this.http
         .get(url, {
-          // headers: {
-          //   Origin: 'https://www.armieux.fr',
-          // },
+          headers: {
+            Origin: 'https://www.armieux.fr',
+          },
         })
         .subscribe((data: any) => {
-          console.log('GET HORAIRE DATA : ');
-          console.log(data);
-  
+          // console.log('GET HORAIRE DATA : ');
+          // console.log(data);
+
           let lineSchedules: LineSchedule[] = [];
           //chaque direction
           data.forEach((element: any) => {
@@ -58,16 +59,26 @@ export class MTAGAPIService {
             lineSchedule.direction = element.pattern.desc;
             element.times.forEach((element: any) => {
               let date = new Date(element.realtimeArrival * 1000);
-              let minutes = date.getMinutes();
+              let now = new Date();
+
+              let minutes =
+                date.getHours() * 60 +
+                date.getMinutes() -
+                (now.getMinutes() + now.getHours() * 60) -
+                60;
+
+              //let minutes = date.getMinutes() - now.getMinutes();
               console.log(minutes);
               lineSchedule.times.push(minutes.toString());
             });
             lineSchedules.push(lineSchedule);
           });
-  
+
           // console.log('LINE SCHEDULES : ');
           // console.log(lineSchedules);
+
           resolve(lineSchedules);
+          return lineSchedules;
         });
     });
   }
