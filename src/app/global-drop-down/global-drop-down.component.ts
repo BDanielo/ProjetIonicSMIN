@@ -13,8 +13,7 @@ interface LineColor {
 @Component({
   selector: 'app-global-drop-down',
   templateUrl: './global-drop-down.component.html',
-  styleUrls: ['./global-drop-down.component.scss'],
-  entryComponents: [DropDownScheduleComponent]
+  styleUrls: ['./global-drop-down.component.scss']
 })
 export class GlobalDropDownComponent implements OnInit {
 

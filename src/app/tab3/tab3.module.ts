@@ -18,5 +18,6 @@ import { SharedModuleModule } from '../shared-module/shared-module.module';
     SharedModuleModule,
   ],
   declarations: [Tab3Page],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
 })
 export class Tab3PageModule {}

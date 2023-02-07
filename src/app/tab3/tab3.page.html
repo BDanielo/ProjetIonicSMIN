@@ -14,7 +14,12 @@
   </ion-header>
 
   <div *ngFor="let fav of favorites" >
-    <p>fav</p>
+    <app-drop-down-schedule 
+    [lineName]="fav.line" 
+    [name]="fav.name" 
+    [stationId]="fav.stationId"
+    (favChange)="favChange()">
+    </app-drop-down-schedule>
   </div>
 
 </ion-content>

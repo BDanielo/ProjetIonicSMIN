@@ -17,4 +17,12 @@ export class Tab3Page {
     this.favorites = this.favoritesService.getFavorites();
   }
 
+  ionViewWillEnter() {
+    this.favorites = this.favoritesService.getFavorites();
+  }
+
+  favChange() {
+    this.favorites = this.favoritesService.getFavorites();
+  }
+
 }

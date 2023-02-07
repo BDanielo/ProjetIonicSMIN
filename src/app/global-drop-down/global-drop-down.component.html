@@ -13,8 +13,7 @@
   </div>
   <div *ngIf="isOpen"  class="dropDown_body">
     <div *ngFor="let cluster of tramStations"  class="dropDown_body_content">
-      <!-- <app-drop-down-schedule [lineName]="this.lineName" [name]="cluster.name" [stationId]="cluster.code"></app-drop-down-schedule> -->
-
+      <app-drop-down-schedule [lineName]="this.lineName" [name]="cluster.name" [stationId]="cluster.code"></app-drop-down-schedule>
     </div>
   </div>
 </div>

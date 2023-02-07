@@ -39,13 +39,13 @@ export class MTAGAPIService {
           line
         );
 
-      console.log('STOP TIMES | URL : ' + url);
+      // console.log('STOP TIMES | URL : ' + url);
 
       this.http
         .get(url, {
-          headers: {
-            Origin: 'https://www.armieux.fr',
-          },
+          // headers: {
+          //   Origin: 'https://www.armieux.fr',
+          // },
         })
         .subscribe((data: any) => {
           // console.log('GET HORAIRE DATA : ');
@@ -68,7 +68,7 @@ export class MTAGAPIService {
                 60;
 
               //let minutes = date.getMinutes() - now.getMinutes();
-              console.log(minutes);
+              // console.log(minutes);
               lineSchedule.times.push(minutes.toString());
             });
             lineSchedules.push(lineSchedule);
@@ -154,8 +154,8 @@ export class MTAGAPIService {
       '&date=' +
       date +
       '&locale=fr_FR';
-    console.log(url);
-    console.log(this.http.get(url));
+    // console.log(url);
+    // console.log(this.http.get(url));
   }
 
   getTramStationsOfLine(id: string) {

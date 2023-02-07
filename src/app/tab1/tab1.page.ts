@@ -87,16 +87,16 @@ export class Tab1Page {
       this.markEveryStation();
     });
 
-    console.log(
-      this.MtagService.getStopTimesFromStation('SEM:GENLETOILE', 'SEM:A')
-    );
+    // console.log(
+    //   this.MtagService.getStopTimesFromStation('SEM:GENLETOILE', 'SEM:A')
+    // );
   }
 
   getLocation(): Promise<Position> {
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition()
         .then((position: any) => {
-          console.log('location from service : ', position);
+          // console.log('location from service : ', position);
           resolve(position);
           // set map localisation
           this.map?.setView(
@@ -123,11 +123,11 @@ export class Tab1Page {
   }
 
   markEveryStation() {
-    console.log('MARK EVERY STATION');
+    // console.log('MARK EVERY STATION');
     this.MtagService.TramStations.forEach((Line) => {
-      console.log(Line);
+      // console.log(Line);
       Line.TramStation.forEach((station) => {
-        console.log(station);
+        // console.log(station);
         this.markStation(station);
       });
     });
