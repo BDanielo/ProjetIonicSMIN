@@ -6,14 +6,14 @@
     <div (click)="toggleDropDown()" id="name" style="width: {{ customWidth }}%;">
       {{ name }}
     </div>
-    <ion-icon *ngIf="isAlert" (click)="toggleDropDown()" id="alert" name="warning" style="color:yellow;"></ion-icon>
-    <ion-icon *ngIf="isOpen" (click)="toggleDropDown()" id="chevron" name="chevron-up-circle-outline"></ion-icon>
-    <ion-icon *ngIf="!isOpen" (click)="toggleDropDown()" id="chevron"  name="chevron-down-circle-outline"></ion-icon>
+    <ion-icon *ngIf="isAlert && type != 'location'" (click)="toggleDropDown()" id="alert" name="warning" style="color:yellow;"></ion-icon>
+    <ion-icon *ngIf="isOpen && type != 'location'" (click)="toggleDropDown()" id="chevron" name="chevron-up-circle-outline"></ion-icon>
+    <ion-icon *ngIf="!isOpen && type != 'location'" (click)="toggleDropDown()" id="chevron"  name="chevron-down-circle-outline"></ion-icon>
     <ion-icon *ngIf="!isFavorite" (click)="toggleFavorite()"  id="favorite" name="heart-outline"></ion-icon>
     <ion-icon *ngIf="isFavorite" (click)="toggleFavorite()" id="favorite" name="heart" style="color:rgb(255, 50, 50);"></ion-icon>
 
   </div>
-  <div *ngIf="isOpen"  class="dropDown_body">
+  <div *ngIf="isOpen && type != 'location'"  class="dropDown_body">
     <div class="dropDown_body_content">
       <div *ngFor="let lineSchedule of linesSchedule" >
         <div class="lineSchedule">

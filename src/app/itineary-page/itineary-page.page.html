@@ -16,8 +16,9 @@
         id="from"
         placeholder="Depart"
         animated
-        showCancelButton="focus"
+        show-clear-button="focus"
         autocomplete="street-address"
+        (ionFocus)="searchBarFocused()"
       ></ion-searchbar>
 
     </div>
@@ -27,31 +28,48 @@
         id="to"
         placeholder="Arrivée"
         animated
-        showCancelButton="focus"
+        show-clear-button="focus"
+        autocomplete="street-address"
       ></ion-searchbar>
     </div>
 
-    <div id="quickSearch">
-      <div id="whitchSearch">
-        <p (click)="toggleQuickSearchFav()" id="{{ classSelectionFav }}">Favoris</p>
-        <p (click)="toggleQuickSearchRecent()" id="{{ classSelectionRecent }}">Récent</p>
+    <div>
+      <div id="quickSearch">
+        <div id="whitchSearch">
+          <p (click)="toggleQuickSearchFav()" id="{{ classSelectionFav }}">Favoris</p>
+          <p (click)="toggleQuickSearchRecent()" id="{{ classSelectionRecent }}">Récent</p>
+        </div>
+  
+        <div id="list">
+          <ion-content [scrollEvents]="true">
+            <ion-list *ngIf="isFav" >
+              <ion-item *ngFor="let fav of favorites">
+                <ion-label (click)="favSelected(fav)" >{{ fav.name }}</ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-content>
+          <ion-list *ngIf="!isFav" >
+            <ion-content [scrollEvents]="true">
+              <ion-item *ngFor="let fav of favorites">
+                <ion-label >{{ fav.type }}</ion-label>
+              </ion-item>
+            </ion-content>
+          </ion-list>
+        </div>
       </div>
 
-      <div id="list">
-        <ion-list *ngIf="isFav" >
-          <ion-item *ngFor="let fav of favorites">
-            <ion-label (click)="favSelected(fav)" >{{ fav.name }}</ion-label>
-          </ion-item>
-        </ion-list>
-        <ion-list *ngIf="!isFav" >
-          <ion-item *ngFor="let fav of favorites">
-            <ion-label >{{ fav.type }}</ion-label>
-          </ion-item>
-        </ion-list>
+      <div id="departTime">
+        <div id="whitchSearch">
+          <p (click)="toggleDepart()" id="{{ classSelectionDepart }}">Départ à</p>
+          <p (click)="toggleArrival()" id="{{ classSelectionArrival }}">Arrivée à</p>
+        </div>
+  
+        <ion-datetime presentation="time" [preferWheel]="true" color="white"></ion-datetime>
       </div>
 
       <ion-button id="submitButton" (click)="search()">Rechercher</ion-button>
     </div>
+    
   </div>
 
 
