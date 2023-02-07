@@ -61,6 +61,12 @@ export interface GeoPoint {
   lon: number;
 }
 
+export interface AddressDetails {
+  name: string;
+  lat: number;
+  lon: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -74,12 +80,14 @@ export class MTAGAPIService {
 
   private URLitineraire = 'routers/default/plan';
 
-  // https://data.mobilites-m.fr/api/routers/default/index/clusters/SEM:GENLETOILE/stoptimes?route=SEM%3AA
-
   private URLhorairesArret =
     'routers/default/index/clusters/:station/stoptimes?route=:line';
 
-  // https://data.mobilites-m.fr/api/routers/default/plan?routerId=prod&otp=undefined&mode=TRANSIT&showIntermediateStops=true&numItineraries=3&maxWalkDistance=1000&fromPlace=45.18999132364521,5.715137975226607&toPlace=45.18908931392589,5.698438510275174&arriveBy=false&time=11:56&date=2023-02-03&ui_date=vendredi-03-f%C3%A9vrier-03/02/2023&locale=fr_FR&walkReluctance=10
+  private URLlignePolyline = 'lines/poly?types=ligne&codes=:ligne&reseaux=SEM';
+
+  private URLnominatimSearch = 'https://nominatim.openstreetmap.org/search';
+
+  private URLnominatimReverse = 'https://nominatim.openstreetmap.org/reverse';
 
   public TramLines: TramLine[] = [];
   public TramStations: StationsOfLine[] = [];
@@ -125,7 +133,7 @@ export class MTAGAPIService {
                 60;
 
               //let minutes = date.getMinutes() - now.getMinutes();
-              console.log(minutes);
+              // console.log(minutes);
               lineSchedule.times.push(minutes.toString());
             });
             lineSchedules.push(lineSchedule);
@@ -141,42 +149,62 @@ export class MTAGAPIService {
   }
 
   getTramStations(id: string) {
-    return this.http.get(
-      this.mtagApiUrl + this.URLarretsLignes.replace(':id', id)
-    );
+    return new Promise((resolve, reject) => {
+      this.http
+        .get(this.mtagApiUrl + this.URLarretsLignes.replace(':id', id))
+        .subscribe((data: any) => {
+          // console.log('DATA TRAM :');
+          // console.log(data);
+          resolve(data);
+        });
+    });
   }
 
   getTramLines() {
     return new Promise((resolve, reject) => {
-      this.http
-        .get(this.mtagApiUrl + this.URLlignes.replace(':transport', 'TRAM'))
-        .subscribe((data: any) => {
-          this.TramLines = data;
-          // console.log(this.lignesTram);
-          resolve(this.TramLines);
-        });
+      if (this.TramLines[0] == undefined) {
+        this.http
+          .get(this.mtagApiUrl + this.URLlignes.replace(':transport', 'TRAM'))
+          .subscribe((data: any) => {
+            this.TramLines = data;
+            // console.log(this.lignesTram);
+            resolve(this.TramLines);
+          });
+      } else {
+        resolve(this.TramLines);
+      }
     });
   }
 
   getAllTramStations() {
     return new Promise((resolve, reject) => {
-      this.TramStations = [];
-      this.getTramLines().then((data) => {
-        this.TramLines.forEach((element) => {
-          this.getTramStations(element.id).subscribe((data: any) => {
-            let StationsOfLine: StationsOfLine = {
-              Line: element.id,
-              TramStation: data,
-            };
-            this.TramStations.push(StationsOfLine);
+      // console.log('GET ALL STATIONS');
+      // console.log(this.TramStations[0]);
+      if (this.TramStations[0] == undefined) {
+        this.TramStations = [];
+        this.getTramLines().then((data) => {
+          this.TramLines.forEach((element) => {
+            this.getTramStations(element.id).then((data: any) => {
+              // console.log('DATA :');
+              // console.log(data);
+              let StationsOfLine: StationsOfLine = {
+                Line: element.id,
+                TramStation: data,
+              };
+              // console.log(StationsOfLine);
+              this.TramStations.push(StationsOfLine);
+              // check if this is the last element
+              if (element.id == this.TramLines[this.TramLines.length - 1].id) {
+                // console.log('FINISHED');
+                // console.log(this.TramStations);
+                resolve(this.TramStations);
+              }
+            });
           });
         });
-        console.log('LINES : ');
-        console.log(this.TramLines);
-        console.log('STATIONS : ');
-        console.log(this.TramStations);
+      } else {
         resolve(this.TramStations);
-      });
+      }
     });
   }
 
@@ -211,9 +239,9 @@ export class MTAGAPIService {
           },
         })
         .subscribe((data: any) => {
-          console.log('CALC ITINERARY');
-          console.log(url);
-          console.log(data);
+          // console.log('CALC ITINERARY');
+          // console.log(url);
+          // console.log(data);
           let test: string[] = [];
           // chaques itinéraires
           let Itinerarie: Itineraries = {
@@ -226,7 +254,7 @@ export class MTAGAPIService {
           let minDuration: number = 0;
 
           data.plan.itineraries.forEach((element: Itineraries) => {
-            console.log('ITINERARY :');
+            // console.log('ITINERARY :');
             // get min duration
             if (minDuration === 0) {
               minDuration = element.duration;
@@ -235,10 +263,10 @@ export class MTAGAPIService {
               minDuration = element.duration;
               Itinerarie = element;
             }
-            console.log(element);
+            // console.log(element);
           });
-          console.log('ITINERARIE : ');
-          console.log(Itinerarie);
+          // console.log('ITINERARIE : ');
+          // console.log(Itinerarie);
           resolve(Itinerarie);
           return Itinerarie;
         });
@@ -248,5 +276,110 @@ export class MTAGAPIService {
   getTramStationsOfLine(id: string) {
     this.getAllTramStations();
     return this.TramStations.find((element) => element.Line === id);
+  }
+
+  getLinesPolyline(line: string) {
+    return new Promise((resolve, reject) => {
+      line = line.replace(':', '_');
+      this.http
+        .get(this.mtagApiUrl + this.URLlignePolyline.replace(':ligne', line))
+        .subscribe((data: any) => {
+          // console.log(data);
+          resolve(data);
+        });
+    });
+  }
+
+  reverseGeoCoding(lat: number, lon: number) {
+    return new Promise((resolve, reject) => {
+      let url =
+        this.URLnominatimReverse +
+        `?lat=${lat}&lon=${lon}&namedetails=1&addressdetails=1&format=json`;
+      this.http.get(url).subscribe((data: any) => {
+        console.log('POS :' + lat + ',' + lon + ' url : ' + url);
+        // console.log(data);
+
+        let nameAdr: string = '';
+
+        if (data.address.amenity != undefined) {
+          nameAdr += data.address.amenity;
+        } else {
+          if (data.address.house_number != undefined) {
+            nameAdr += data.address.house_number + ' ';
+          }
+
+          if (data.address.road != undefined) {
+            nameAdr += data.address.road;
+          }
+
+          if (data.address.town != undefined) {
+            nameAdr += ', ' + data.address.town;
+          }
+
+          if (data.address.city != undefined) {
+            nameAdr += ', ' + data.address.city;
+          }
+        }
+
+        let adresse: AddressDetails = {
+          name: nameAdr,
+          lat: data.lat,
+          lon: data.lon,
+        };
+        console.log(adresse);
+
+        resolve(adresse);
+      });
+    });
+  }
+
+  searchGeocoding(search: string) {
+    return new Promise((resolve, reject) => {
+      let url =
+        this.URLnominatimSearch +
+        `?street=${encodeURI(search)}&county=Isere&format=json`;
+      this.http.get(url).subscribe((data: any) => {
+        console.log(search + ' url : ' + url);
+
+        this.reverseGeoCoding(data[0].lat, data[0].lon).then((data: any) => {
+          resolve(data);
+        });
+      });
+    });
+  }
+
+  searchAutocomplete(search: string) {
+    return new Promise((resolve, reject) => {
+      let url =
+        this.URLnominatimSearch +
+        `?street=${encodeURI(search)}&county=Isere&limit=5&format=json`;
+      this.http.get(url).subscribe((data: any) => {
+        console.log(search + ' url : ' + url);
+        console.log(data);
+
+        let list: AddressDetails[] = [];
+
+        data.forEach((element: any) => {
+          let tempAdr: AddressDetails = {
+            name: element.display_name,
+            lat: element.lat,
+            lon: element.lon,
+          };
+
+          // remove all character after Isère in name
+          let index = tempAdr.name.indexOf('Isère');
+          if (index > 0) {
+            tempAdr.name = tempAdr.name.substring(0, index - 1);
+          }
+
+          list.push(tempAdr);
+          // if last element
+          if (element === data[data.length - 1]) {
+            // console.log(list);
+            resolve(list);
+          }
+        });
+      });
+    });
   }
 }
