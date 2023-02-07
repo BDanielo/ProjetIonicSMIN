@@ -136,25 +136,27 @@
               <div
                 *ngFor="let itinerary of itinerarys; let index=index"
                 id="itinary"
+                (click)="goToMapWithItinerary(itinerary)"
               >
-                <ion-label
-                  >Itinéraire n:{{ index }} | Durée : {{
-                  convertSecondsToMinutes(itinerary.duration) }}</ion-label
-                >
-                <div>
-                  <span>
-                    Heure de départ : {{ convertTimestamp(itinerary.startTime)
-                    }}
-                  </span>
-                  <span>
-                    Heure d'arrivée : {{ convertTimestamp(itinerary.endTime) }}
-                  </span>
-                </div>
+                <ion-list-header>
+                  <ion-title>Itinéraire {{ index+1 }}</ion-title>
+                  <ion-icon name="chevron-forward-outline" color="white"></ion-icon>  
+                </ion-list-header>
+
                 <ion-item-divider>
-                  <ion-list
-                    (click)="goToMapWithItinerary(itinerary)"
-                    class="listMoving"
-                  >
+                  <div class="hours">
+                    <span>
+                      Départ: {{ convertTimestamp(itinerary.startTime)
+                      }}
+                    </span>
+                    <span>
+                      Durée : {{ convertSecondsToMinutes(itinerary.duration) }}
+                    </span>
+                    <span>
+                      Arrivée: {{ convertTimestamp(itinerary.endTime) }}
+                    </span>
+                  </div>
+                  <ion-list class="listMoving">
                     <ion-item id="ListLegs">
                       <ion-slides>
                         <div
