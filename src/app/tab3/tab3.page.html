@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Tab 3
+      Favoris
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -13,5 +13,13 @@
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+  <div *ngFor="let fav of favorites" >
+    <app-drop-down-schedule 
+    [lineName]="fav.line" 
+    [name]="fav.name" 
+    [stationId]="fav.stationId"
+    (favChange)="favChange()">
+    </app-drop-down-schedule>
+  </div>
+
 </ion-content>

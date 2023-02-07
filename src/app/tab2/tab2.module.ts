@@ -8,10 +8,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Tab2Page } from './tab2.page';
 import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
-import { DropDownScheduleComponent } from '../drop-down-schedule/drop-down-schedule.component';
 
 import { Tab2PageRoutingModule } from './tab2-routing.module';
-import { GlobalDropDownComponent } from '../global-drop-down/global-drop-down.component';
+import { SharedModuleModule } from '../shared-module/shared-module.module';
 
 @NgModule({
   imports: [
@@ -20,8 +19,9 @@ import { GlobalDropDownComponent } from '../global-drop-down/global-drop-down.co
     FormsModule,
     ExploreContainerComponentModule,
     Tab2PageRoutingModule,
+    SharedModuleModule,
   ],
-  declarations: [Tab2Page, DropDownScheduleComponent, GlobalDropDownComponent],
+  declarations: [Tab2Page],
   schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
 })
 export class Tab2PageModule {}

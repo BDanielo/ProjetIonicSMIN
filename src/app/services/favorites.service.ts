@@ -1,27 +1,42 @@
 import { Injectable } from '@angular/core';
+import { Storage } from '@ionic/storage';
+import { Favorite } from '../interfaces/favorite';
 
-export interface Favorite {
-  name: string;
-  type: string; //TramStation or Custom
-  stationid: string;
-  lat: number;
-  lon: number;
-}
+const store = new Storage({
+  name: 'favoritesBDD',
+  storeName: 'favorites',
+});
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class FavoritesService {
-  public favorites: Favorite[] = [];
+  public favorites: Array<Favorite> = [];
 
-  constructor() {}
+  constructor() {
+    console.log("init");
+    store.create().then(() => {
+      console.log("created");
+      store.get('favorites').then((val) => {
+        console.log("get");
 
+        if (val) {
+          console.log(val);
+          this.favorites = val;
+        }
+      });
+    });
+  }
+  
   addFavorite(favorite: Favorite) {
     this.favorites.push(favorite);
+    store.set('favorites', this.favorites);
   }
 
-  removeFavorite(favorite: Favorite) {
-    this.favorites = this.favorites.filter((f) => f !== favorite);
+  removeFavorite(favId: string, line: string) {
+    this.favorites = this.favorites.filter((f) => f.stationId !== favId || f.line !== line);
+    store.set('favorites', this.favorites);
   }
 
   getFavorites() {
@@ -32,8 +47,8 @@ export class FavoritesService {
     return this.favorites.find((f) => f.name === name);
   }
 
-  NameisFavorite(name: string) {
-    return this.favorites.find((f) => f.name === name) ? true : false;
+  IdIsFavorite(favId: string, line:string) {
+    return this.favorites.find((f) => f.stationId === favId && f.line === line) ? true : false;
   }
 
   PositionIsFavorite(lat: number, lon: number) {
@@ -47,7 +62,7 @@ export class FavoritesService {
   }
 
   getFavoritesByStationId(stationid: string) {
-    return this.favorites.filter((f) => f.stationid === stationid);
+    return this.favorites.filter((f) => f.stationId === stationid);
   }
 
   getFavoritesByPosition(lat: number, lon: number) {

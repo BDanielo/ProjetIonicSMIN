@@ -1,6 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { LineSchedule } from '../interfaces/line-schedule';
 import { MTAGAPIService } from '../services/mtag-api.service';
+import { FavoritesService } from '../services/favorites.service';
+import { Favorite } from '../interfaces/favorite';
 
 interface LineColor {
   [key: string]: string;
@@ -17,6 +19,7 @@ export class DropDownScheduleComponent implements OnInit {
   @Input() lineName: string = "B";
   @Input() isAlert: boolean = false;
   @Input() stationId: string = "";
+  @Output() favChange = new EventEmitter<boolean>();
 
   linesSchedule: Array<LineSchedule> = [];
 
@@ -39,12 +42,20 @@ export class DropDownScheduleComponent implements OnInit {
   customWidth = 65;
   timerInterval: any;
 
-  constructor(public mtagService: MTAGAPIService) { }
+  constructor(
+    public mtagService: MTAGAPIService,
+    public favoritesService: FavoritesService
+    ) {}
 
 
   ngOnInit() {
     this.color = this.lineColor[this.lineName];
     this.testIcon();
+    this.favoritesService.IdIsFavorite(this.stationId, this.lineName) ? this.isFavorite = true : this.isFavorite = false;
+  }
+
+  ngAfterContentChecked() {
+    this.favoritesService.IdIsFavorite(this.stationId, this.lineName) ? this.isFavorite = true : this.isFavorite = false;
   }
 
   testIcon(){
@@ -77,6 +88,8 @@ export class DropDownScheduleComponent implements OnInit {
   }
 
   toggleDropDown() {
+    this.favoritesService.IdIsFavorite(this.stationId, this.lineName) ? this.isFavorite = true : this.isFavorite = false;
+
     this.isOpen = !this.isOpen;
     if (this.isOpen) {
       this.getSchedule();
@@ -91,6 +104,19 @@ export class DropDownScheduleComponent implements OnInit {
 
   toggleFavorite() {
     this.isFavorite = !this.isFavorite;
+    if (this.isFavorite) {
+      this.favoritesService.addFavorite({
+        name: this.name,
+        type: "tramStation",
+        stationId: this.stationId,
+        line: this.lineName,
+        lat: 0,
+        lon: 0
+      });
+    } else {
+      this.favoritesService.removeFavorite(this.stationId, this.lineName);
+      this.favChange.emit();
+    }
   }
 
 }

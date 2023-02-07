@@ -74,12 +74,11 @@ export class MTAGAPIService {
 
       // console.log('STOP TIMES | URL : ' + url);
 
-
       this.http
         .get(url, {
-          headers: {
-            Origin: 'https://www.armieux.fr',
-          },
+          // headers: {
+          //   Origin: 'https://www.armieux.fr',
+          // },
         })
         .subscribe((data: any) => {
           // console.log('GET HORAIRE DATA : ');
@@ -102,9 +101,7 @@ export class MTAGAPIService {
                 60;
 
               //let minutes = date.getMinutes() - now.getMinutes();
-
               // console.log(minutes);
-
 
               lineSchedule.times.push(minutes.toString());
             });

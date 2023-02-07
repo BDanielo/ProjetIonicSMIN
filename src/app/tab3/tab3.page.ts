@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Favorite } from '../interfaces/favorite';
+import { FavoritesService } from '../services/favorites.service';
 
 @Component({
   selector: 'app-tab3',
@@ -7,6 +9,20 @@ import { Component } from '@angular/core';
 })
 export class Tab3Page {
 
-  constructor() {}
+  favorites: Array<Favorite> = [];
+
+  constructor(public favoritesService: FavoritesService) {}
+
+  ngOnInit() {
+    this.favorites = this.favoritesService.getFavorites();
+  }
+
+  ionViewWillEnter() {
+    this.favorites = this.favoritesService.getFavorites();
+  }
+
+  favChange() {
+    this.favorites = this.favoritesService.getFavorites();
+  }
 
 }

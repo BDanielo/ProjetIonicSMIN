@@ -1,4 +1,6 @@
+import { FavoritesService } from './services/favorites.service';
 import { Component } from '@angular/core';
+import { MTAGAPIService } from './services/mtag-api.service';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +8,8 @@ import { Component } from '@angular/core';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  constructor() {}
+  constructor(
+    public favoritesService: FavoritesService,
+    public mtagService: MTAGAPIService 
+    ) {}
 }

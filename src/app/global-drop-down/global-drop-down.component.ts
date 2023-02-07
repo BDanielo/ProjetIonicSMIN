@@ -1,3 +1,4 @@
+import { DropDownScheduleComponent } from './../drop-down-schedule/drop-down-schedule.component';
 import { StationsOfLine } from './../interfaces/stations-of-line';
 import { TramStation } from './../interfaces/tram-station';
 import { Component, Input, OnInit } from '@angular/core';
@@ -8,10 +9,11 @@ interface LineColor {
   [key: string]: string;
 }
 
+//import { DropDownScheduleComponent } from '../drop-down-schedule/drop-down-schedule.component';
 @Component({
   selector: 'app-global-drop-down',
   templateUrl: './global-drop-down.component.html',
-  styleUrls: ['./global-drop-down.component.scss'],
+  styleUrls: ['./global-drop-down.component.scss']
 })
 export class GlobalDropDownComponent implements OnInit {
 

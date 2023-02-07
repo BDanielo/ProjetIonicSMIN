@@ -101,6 +101,7 @@ export class Tab1Page {
 
     this.MtagService.searchGeocoding('gare grenoble').then((data: any) => {});
 
+ 
     this.MtagService.searchGeocoding('33 avenue aristide briand').then(
       (data: any) => {}
     );

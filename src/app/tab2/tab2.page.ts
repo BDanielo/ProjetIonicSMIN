@@ -15,9 +15,9 @@ export class Tab2Page {
   ngOnInit() {
     this.mtagService.getAllTramStations().then((data:any ) => {
       this.tramStations = data;
-      console.log(
-        this.tramStations
-      );
+      // console.log(
+      //   this.tramStations
+      // );
     });
   }
 
