@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 // import leaflet routing machine
 import * as leaflet from 'leaflet';
 import 'leaflet-routing-machine';
+import 'leaflet-control-geocoder';
 import { Geolocation, Position } from '@capacitor/geolocation';
 import {
   GeoPoint,
@@ -44,6 +45,8 @@ export class Tab1Page {
         maxZoom: 18,
       })
       .addTo(this.map);
+
+    L.Control.geocoder().addTo(this.map);
 
     // add marker IUT1
     const IUT1 = leaflet
@@ -101,8 +104,11 @@ export class Tab1Page {
       console.log(this.MtagService.TramStations);
     });
 
-    console.log(
-      this.MtagService.getStopTimesFromStation('SEM:GENLETOILE', 'SEM:A')
+    this.MtagService.getStopTimesFromStation('SEM:GENLETOILE', 'SEM:A').then(
+      (data: any) => {
+        console.log('GET STOPS FROM STATION');
+        console.log(data);
+      }
     );
 
     var encoded =

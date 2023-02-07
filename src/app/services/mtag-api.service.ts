@@ -88,42 +88,56 @@ export class MTAGAPIService {
 
   // get stop times from station id and line id | use TramStations.TramTramStation.id and TramStations.TramLines.id
   getStopTimesFromStation(station: string, line: string) {
-    let url =
-      this.mtagApiUrl +
-      this.URLhorairesArret.replace(':station', station).replace(':line', line);
+    return new Promise((resolve, reject) => {
+      let url =
+        this.mtagApiUrl +
+        this.URLhorairesArret.replace(':station', station).replace(
+          ':line',
+          line
+        );
 
-    // console.log('STOP TIMES | URL : ' + url);
+      // console.log('STOP TIMES | URL : ' + url);
 
-    this.http
-      .get(url, {
-        headers: {
-          Origin: 'https://www.armieux.fr',
-        },
-      })
-      .subscribe((data: any) => {
-        // console.log('GET HORAIRE DATA : ');
-        // console.log(data);
+      this.http
+        .get(url, {
+          headers: {
+            Origin: 'https://www.armieux.fr',
+          },
+        })
+        .subscribe((data: any) => {
+          // console.log('GET HORAIRE DATA : ');
+          // console.log(data);
 
-        let lineSchedules: LineSchedule[] = [];
-        //chaque direction
-        data.forEach((element: any) => {
-          //chaque horaire
-          let lineSchedule: LineSchedule = { direction: '', times: [] };
-          lineSchedule.direction = element.pattern.desc;
-          element.times.forEach((element: any) => {
-            let date = new Date(element.realtimeArrival * 1000);
-            let minutes = date.getMinutes();
-            console.log(minutes);
-            lineSchedule.times.push(minutes.toString());
+          let lineSchedules: LineSchedule[] = [];
+          //chaque direction
+          data.forEach((element: any) => {
+            //chaque horaire
+            let lineSchedule: LineSchedule = { direction: '', times: [] };
+            lineSchedule.direction = element.pattern.desc;
+            element.times.forEach((element: any) => {
+              let date = new Date(element.realtimeArrival * 1000);
+              let now = new Date();
+
+              let minutes =
+                date.getHours() * 60 +
+                date.getMinutes() -
+                (now.getMinutes() + now.getHours() * 60) -
+                60;
+
+              //let minutes = date.getMinutes() - now.getMinutes();
+              console.log(minutes);
+              lineSchedule.times.push(minutes.toString());
+            });
+            lineSchedules.push(lineSchedule);
           });
-          lineSchedules.push(lineSchedule);
+
+          // console.log('LINE SCHEDULES : ');
+          // console.log(lineSchedules);
+
+          resolve(lineSchedules);
+          return lineSchedules;
         });
-
-        // console.log('LINE SCHEDULES : ');
-        // console.log(lineSchedules);
-
-        return lineSchedules;
-      });
+    });
   }
 
   getTramStations(id: string) {
