@@ -28,6 +28,7 @@ export class ItinearyPagePage implements OnInit {
   isDepart = true;
   classSelectionDepart = select;
   classSelectionArrival = "";
+  chosenDate = ""
 
   // fav1: Favorite = {
   //   name: "Quai Stéphane Jay, 38000 Grenoble",
@@ -100,15 +101,14 @@ toggleArrival(){
 }
 
   search() {
-    throw new Error('Method not implemented.');
+    console.log(this.chosenDate);
   }
 
   favSelected(fav: Favorite) {
-    throw new Error('Method not implemented.');
+    console.log(fav);
   }
 
   searchBarFocused(){
-    console.log("isFocused");
   }
 
 }
