@@ -71,7 +71,6 @@ export class MTAGAPIService {
           line
         );
 
-
       // console.log('STOP TIMES | URL : ' + url);
 
       this.http
@@ -122,11 +121,9 @@ export class MTAGAPIService {
       this.http
         .get(this.mtagApiUrl + this.URLarretsLignes.replace(':id', id))
         .subscribe((data: any) => {
-
           // console.log('DATA TRAM :');
           // console.log(data);
           resolve(data);
-
         });
     });
   }
@@ -135,7 +132,10 @@ export class MTAGAPIService {
     return new Promise((resolve, reject) => {
       if (this.TramLines[0] == undefined) {
         this.http
-          .get(this.mtagApiUrl + this.URLlignes.replace(':transport', 'TRAM'))
+          .get(
+            this.mtagApiUrl +
+              this.URLlignes.replace(':transport', 'TRAM,CHRONO')
+          )
           .subscribe((data: any) => {
             this.TramLines = data;
             // console.log(this.lignesTram);
@@ -173,7 +173,6 @@ export class MTAGAPIService {
             });
           });
         });
-
       } else {
         resolve(this.TramStations);
       }

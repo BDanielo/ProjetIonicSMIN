@@ -101,7 +101,6 @@ export class Tab1Page {
 
     this.MtagService.searchGeocoding('gare grenoble').then((data: any) => {});
 
- 
     this.MtagService.searchGeocoding('33 avenue aristide briand').then(
       (data: any) => {}
     );
@@ -259,6 +258,8 @@ export class Tab1Page {
         // console.log('AH');
         // console.log(data);
         this.SearchResults = data;
+        if (this.SearchResults) {
+        }
         //   // create a marker for the result
         //   if (this.markerSearch) this.map?.removeLayer(this.markerSearch);
         //   this.markerSearch = L.marker([data.lat, data.lon]).addTo(this.map!);
