@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { LineSchedule } from '../interfaces/line-schedule';
+import { MTAGAPIService } from '../services/mtag-api.service';
 
 interface LineColor {
   [key: string]: string;
@@ -15,7 +16,9 @@ export class DropDownScheduleComponent implements OnInit {
   @Input() name: string = "Grenoble Gare"; 
   @Input() lineName: string = "B";
   @Input() isAlert: boolean = false;
-  @Input() linesSchedule: Array<LineSchedule> | undefined;
+  @Input() stationId: string = "";
+
+  linesSchedule: Array<LineSchedule> = [];
 
   lineColor: LineColor = {
     A: "#3376B8",
@@ -32,33 +35,58 @@ export class DropDownScheduleComponent implements OnInit {
     C7: "#FF0000",
   }
   
-  color = this.lineColor[this.lineName];
+  color:string = "";
+  customWidth = 65;
+  timerInterval: any;
 
-  constructor() { }
+  constructor(public mtagService: MTAGAPIService) { }
 
 
   ngOnInit() {
-    this.linesSchedule = [
-      {
-        "direction": "Grenoble Gare",
-        "times": ["10:00", "10:30"]
-      },
-      {
-        "direction": "Victor Hugo",
-        "times": ["9:00", "10:30"]
-      },
-      {
-        "direction": "Palais des Sports",
-        "times": ["6:00", "10:30"]
-      }
-    ]
+    this.color = this.lineColor[this.lineName];
+    this.testIcon();
   }
+
+  testIcon(){
+    if (this.isAlert) {
+      this.customWidth = 50;
+    } else {
+      this.customWidth = 65;
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.timerInterval != null){
+      clearInterval(this.timerInterval);
+    }
+  }
+
 
   isOpen = false;
   isFavorite = false;
 
+  getSchedule(){
+    this.mtagService.getStopTimesFromStation(this.stationId, "SEM:" + this.lineName).then((data:any ) => {
+      this.linesSchedule = data;
+      if (data == undefined || data.length == 0) {
+        this.isAlert = true;
+        this.testIcon();
+      }
+    });   
+    
+  }
+
   toggleDropDown() {
     this.isOpen = !this.isOpen;
+    if (this.isOpen) {
+      this.getSchedule();
+      this.timerInterval = setInterval(() => {
+        this.getSchedule();
+      }, 30000);
+    } else if (this.timerInterval != null){
+      clearInterval(this.timerInterval);
+
+    }
   }
 
   toggleFavorite() {

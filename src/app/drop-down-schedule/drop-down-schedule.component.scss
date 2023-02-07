@@ -48,6 +48,11 @@
 
 }
 
+#name {
+    text-align: center;
+}
+
+
 .dropDown_body{
     z-index: auto;
 
@@ -58,10 +63,16 @@
     margin: 0px;
     background-color: #2C2121;
     width: 89vw;
+    text-align: center;
     margin-left: 5.4vw;
     transform: translate(0, -0.5em);
     border-radius: 0px 0px 10px 10px;
     padding-bottom: 1vh;
+}
+.dropDown_body_content p{
+    margin: 0px;
+    padding: 1em;
+
 }
 
 .dropDown_body_content {

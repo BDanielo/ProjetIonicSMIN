@@ -1,41 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { LineSchedule } from '../interfaces/line-schedule';
-
-export interface TramLine {
-  id: string;
-  gtfsId: string;
-  shortName: string;
-  longName: string;
-  color: string;
-  textColor: string;
-  mode: string;
-  type: string;
-}
-
-export interface TramStation {
-  id: string;
-  code: string;
-  city: string;
-  name: string;
-  visible: boolean;
-  lat: number;
-  lon: number;
-}
-
-export interface StationsOfLine {
-  Line: string;
-  TramStation: TramStation[];
-}
-
-export interface TimesObject {
-  headsign: string;
-  occupancy: string;
-  realtimeArrival: number;
-  stopName: string;
-  arrivalDelay: number;
-  minutes: number;
-}
+import { TramLine } from '../interfaces/tram-line';
+import { StationsOfLine } from '../interfaces/stations-of-line';
 
 export interface Itineraries {
   duration: number;
@@ -104,7 +71,9 @@ export class MTAGAPIService {
           line
         );
 
+
       // console.log('STOP TIMES | URL : ' + url);
+
 
       this.http
         .get(url, {
@@ -133,7 +102,10 @@ export class MTAGAPIService {
                 60;
 
               //let minutes = date.getMinutes() - now.getMinutes();
+
               // console.log(minutes);
+
+
               lineSchedule.times.push(minutes.toString());
             });
             lineSchedules.push(lineSchedule);
@@ -153,9 +125,11 @@ export class MTAGAPIService {
       this.http
         .get(this.mtagApiUrl + this.URLarretsLignes.replace(':id', id))
         .subscribe((data: any) => {
+
           // console.log('DATA TRAM :');
           // console.log(data);
           resolve(data);
+
         });
     });
   }
@@ -202,6 +176,7 @@ export class MTAGAPIService {
             });
           });
         });
+
       } else {
         resolve(this.TramStations);
       }

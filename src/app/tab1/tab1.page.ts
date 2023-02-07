@@ -5,16 +5,11 @@ import * as leaflet from 'leaflet';
 import 'leaflet-routing-machine';
 //import 'leaflet-control-geocoder';
 import { Geolocation, Position } from '@capacitor/geolocation';
-import {
-  AddressDetails,
-  GeoPoint,
-  Itineraries,
-  leg,
-  MTAGAPIService,
-  StationsOfLine,
-  TramLine,
-  TramStation,
-} from '../services/mtag-api.service';
+import {  MTAGAPIService } from '../services/mtag-api.service';
+import { TramStation } from '../interfaces/tram-station';
+import { TramLine } from '../interfaces/tram-line';
+import { LineSchedule } from '../interfaces/line-schedule';
+import { StationsOfLine } from '../interfaces/stations-of-line';
 
 import 'polyline-encoded';
 

@@ -1,0 +1,19 @@
+<div class="DropDown">
+  <div class="dropDown_header" (click)="toggle()">
+    <div id="lineName" style="background-color: {{ color }};">
+      {{ lineName }}
+    </div>
+    <div id="lineName">
+      Ligne {{ lineName }}
+    </div>
+    <ion-icon *ngIf="isAlert" id="alert" name="warning" style="color:yellow;"></ion-icon>
+    <ion-icon *ngIf="isOpen" id="chevron" name="chevron-up-circle-outline"></ion-icon>
+    <ion-icon *ngIf="!isOpen" id="chevron"  name="chevron-down-circle-outline"></ion-icon>
+  
+  </div>
+  <div *ngIf="isOpen"  class="dropDown_body">
+    <div *ngFor="let cluster of tramStations"  class="dropDown_body_content">
+      <app-drop-down-schedule [lineName]="this.lineName" [name]="cluster.name" [stationId]="cluster.code"></app-drop-down-schedule>
+    </div>
+  </div>
+</div>
