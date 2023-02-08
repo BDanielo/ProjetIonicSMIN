@@ -58,13 +58,13 @@ export class Tab1Page {
   ItinerarieStart: AddressDetails | undefined;
   ItinerarieEnd: AddressDetails | undefined;
 
-ItineraryLayerState: boolean = false;
+  ItineraryLayerState: boolean = false;
 
   constructor(
     public MtagService: MTAGAPIService,
     public navCtrl: NavController,
     public favoritesService: FavoritesService
-    ) {}
+  ) {}
 
   //constructor() {}asdaw
 
