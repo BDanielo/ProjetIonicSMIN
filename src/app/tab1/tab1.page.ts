@@ -10,6 +10,7 @@ import {
   GeoPoint,
   MTAGAPIService,
   leg,
+  Itineraries,
 } from '../services/mtag-api.service';
 import { TramStation } from '../interfaces/tram-station';
 import { TramLine } from '../interfaces/tram-line';
@@ -19,6 +20,7 @@ import { StationsOfLine } from '../interfaces/stations-of-line';
 import 'polyline-encoded';
 import { NavController } from '@ionic/angular';
 import { FavoritesService } from '../services/favorites.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 declare var L: any;
 
@@ -58,13 +60,28 @@ export class Tab1Page {
   ItinerarieStart: AddressDetails | undefined;
   ItinerarieEnd: AddressDetails | undefined;
 
+  currentItenary: Itineraries = {
+    duration: 0,
+    startTime: 0,
+    endTime: 0,
+    legs: [],
+  };
+
   ItineraryLayerState: boolean = false;
 
   constructor(
     public MtagService: MTAGAPIService,
     public navCtrl: NavController,
-    public favoritesService: FavoritesService
-  ) {}
+    public favoritesService: FavoritesService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {
+    this.route.queryParams.subscribe((params) => {
+      this.currentItenary = params['itinerary'];
+      console.log('ICI');
+      console.log(this.currentItenary);
+    });
+  }
 
   //constructor() {}asdaw
 
@@ -129,10 +146,7 @@ export class Tab1Page {
       (data: any) => {}
     );
 
-    // this.MtagService.getAllTramStations().then((data: any) => {
-    //   console.log('GET ALL STATIONS 2//');
-    //   this.MtagService.getAllTramStations().then((data: any) => {});
-    // });
+    // check if the url contain a intinerary
   }
 
   getLocation(): Promise<Position> {
@@ -283,6 +297,8 @@ export class Tab1Page {
       alert('Veuillez entrer des adresses valides');
     }
   }
+
+  drawItinerary() {}
 
   // get tram lines add them to a layer and add the layer to the map
   markLines() {

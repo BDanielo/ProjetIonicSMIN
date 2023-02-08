@@ -3,7 +3,7 @@
   href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"
 /> -->
 <ion-header [translucent]="true">
-  <!-- <ion-searchbar
+  <ion-searchbar
     id="searchbar"
     placeholder="Recherchez une adresse !"
     animated
@@ -15,44 +15,6 @@
     <ion-item
       *ngFor="let item of SearchResultsTab[0]"
       (click)="search(item.lat,item.lon)"
-    >
-      {{ item.name }}
-    </ion-item>
-  </ion-list> -->
-
-  <ion-searchbar
-    id="fromInput"
-    placeholder="Depart"
-    animated
-    showCancelButton="focus"
-    autocomplete="street-address"
-    [(ngModel)]="fromSearch"
-    (ionInput)="onSearchChange(0)"
-    (keyup.enter)="searchAutocomplete($event,0)"
-  ></ion-searchbar>
-  <ion-list *ngIf="SearchResultsTab[0].length>0">
-    <ion-item
-      *ngFor="let item of SearchResultsTab[0]"
-      (click)="changeSearch(0,item.name)"
-    >
-      {{ item.name }}
-    </ion-item>
-  </ion-list>
-
-  <ion-searchbar
-    id="toInput"
-    placeholder="Arrivée"
-    animated
-    showCancelButton="focus"
-    [(ngModel)]="toSearch"
-    (keyup.enter)="searchAutocomplete($event,1)"
-    (ionInput)="onSearchChange(1)"
-    autocomplete="street-address"
-  ></ion-searchbar>
-  <ion-list *ngIf="SearchResultsTab[1].length>0">
-    <ion-item
-      *ngFor="let item of SearchResultsTab[1]"
-      (click)="changeSearch(1,item.name)"
     >
       {{ item.name }}
     </ion-item>

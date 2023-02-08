@@ -1,58 +1,150 @@
 <ion-header>
   <ion-toolbar>
-    <ion-button (click)="goToMap()" fill="outline" color="light">
-      <ion-icon name="arrow-back"></ion-icon>
-    </ion-button>
-    <ion-title>Itinéraire</ion-title>
+    <ion-title>
+      <ion-button (click)="goToMap()" fill="outline" color="light">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+      <span id="titleCust">Itinéraire</span></ion-title
+    >
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
   <div id="buttonsContainers">
     <div class="buttonContainer">
       <ion-icon name="location-sharp"></ion-icon>
       <ion-searchbar
-        id="from"
+        id="fromInput"
         placeholder="Depart"
         animated
         showCancelButton="focus"
         autocomplete="street-address"
+        [(ngModel)]="fromSearch"
+        (ionInput)="onSearchChange(0)"
+        (ionChange)="searchAutocomplete($event,0)"
+        (keyup.enter)="searchAutocomplete($event,0)"
+        [debounce]="500"
       ></ion-searchbar>
-
     </div>
+    <ion-item *ngIf="SearchLoading[0]">
+      <ion-spinner name="crescent"></ion-spinner>
+    </ion-item>
+    <ion-list *ngIf="SearchResultsTab[0].length>0">
+      <ion-item
+        *ngFor="let item of SearchResultsTab[0]"
+        (click)="changeSearch(0,item.name)"
+      >
+        {{ item.name }}
+      </ion-item>
+    </ion-list>
     <div class="buttonContainer">
       <ion-icon name="pin-sharp"></ion-icon>
       <ion-searchbar
-        id="to"
+        id="toInput"
         placeholder="Arrivée"
         animated
         showCancelButton="focus"
+        showCancelButton="focus"
+        [(ngModel)]="toSearch"
+        (keyup.enter)="searchAutocomplete($event,1)"
+        (ionInput)="onSearchChange(1)"
+        [debounce]="500"
+        (ionChange)="searchAutocomplete($event,1)"
+        autocomplete="street-address"
       ></ion-searchbar>
     </div>
 
+    <ion-item *ngIf="SearchLoading[1]===true">
+      <ion-spinner name="crescent"></ion-spinner>
+    </ion-item>
+    <ion-list *ngIf="SearchResultsTab[1].length>0">
+      <ion-item
+        *ngFor="let item of SearchResultsTab[1]"
+        (click)="changeSearch(1,item.name)"
+      >
+        {{ item.name }}
+      </ion-item>
+    </ion-list>
+
     <div id="quickSearch">
       <div id="whitchSearch">
-        <p (click)="toggleQuickSearchFav()" id="{{ classSelectionFav }}">Favoris</p>
-        <p (click)="toggleQuickSearchRecent()" id="{{ classSelectionRecent }}">Récent</p>
+        <p (click)="toggleQuickSearchFav()" id="{{ classSelectionFav }}">
+          Favoris
+        </p>
+        <p (click)="toggleQuickSearchRecent()" id="{{ classSelectionRecent }}">
+          Récent
+        </p>
       </div>
 
       <div id="list">
-        <ion-list *ngIf="isFav" >
+        <ion-list *ngIf="isFav">
           <ion-item *ngFor="let fav of favorites">
-            <ion-label (click)="favSelected(fav)" >{{ fav.name }}</ion-label>
+            <ion-label (click)="favSelected(fav)">{{ fav.name }}</ion-label>
           </ion-item>
         </ion-list>
-        <ion-list *ngIf="!isFav" >
+        <ion-list *ngIf="!isFav">
           <ion-item *ngFor="let fav of favorites">
-            <ion-label >{{ fav.type }}</ion-label>
+            <ion-label>{{ fav.type }}</ion-label>
           </ion-item>
         </ion-list>
       </div>
 
-      <ion-button id="submitButton" (click)="search()">Rechercher</ion-button>
+      <ion-modal trigger="open-modal">
+        <ng-template>
+          <ion-header>
+            <ion-toolbar>
+              <ion-buttons slot="start">
+                <ion-button (click)="cancel()">Annuler</ion-button>
+              </ion-buttons>
+              <ion-title>Itineraires</ion-title>
+            </ion-toolbar>
+          </ion-header>
+          <ion-content class="ion-padding">
+            <ion-item *ngIf="ItinaryLoading">
+              <ion-spinner name="crescent"></ion-spinner>
+            </ion-item>
+            <div *ngIf="itinerarys.length>0">
+              <div *ngFor="let itinerary of itinerarys; let index=index">
+                <ion-label>Itinéraire n:{{ index }}</ion-label>
+                <ion-button
+                  fill="outline"
+                  color="light"
+                  (click)="goToMapWithItinerary(itinerary)"
+                >
+                  <ion-icon name="arrow-forward"></ion-icon>
+                </ion-button>
+                <p>Durée : {{itinerary.duration/60}}mins</p>
+                <br />
+                <ion-list>
+                  <ion-item id="ListLegs">
+                    <div
+                      *ngFor="let leg of itinerary.legs"
+                      style="background-color:{{RouteColorTranslater[leg.routeColor]}};"
+                    >
+                      <ion-icon
+                        *ngIf="leg.mode==='WALK'"
+                        name="walk"
+                        color="white"
+                      ></ion-icon>
+                      <!-- icon tram -->
+                      <ion-icon
+                        *ngIf="leg.mode==='TRAM'"
+                        name="bus"
+                        color="white"
+                      ></ion-icon>
+                      <p>{{leg.duration/60 | number:'1.0-1'}}mins</p>
+                    </div>
+                  </ion-item>
+                </ion-list>
+              </div>
+            </div>
+          </ion-content>
+        </ng-template>
+      </ion-modal>
+
+      <ion-button id="open-modal" expand="block" (click)="confirmItinerary()"
+        >Recherche</ion-button
+      >
     </div>
   </div>
-
-
 </ion-content>
