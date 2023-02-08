@@ -15,14 +15,9 @@ export class FavoritesService {
   public favorites: Array<Favorite> = [];
 
   constructor() {
-    console.log("init");
     store.create().then(() => {
-      console.log("created");
       store.get('favorites').then((val) => {
-        console.log("get");
-
         if (val) {
-          console.log(val);
           this.favorites = val;
         }
       });

@@ -17,6 +17,7 @@ import { LineSchedule } from '../interfaces/line-schedule';
 import { StationsOfLine } from '../interfaces/stations-of-line';
 
 import 'polyline-encoded';
+import { NavController } from '@ionic/angular';
 import { FavoritesService } from '../services/favorites.service';
 
 declare var L: any;
@@ -57,12 +58,14 @@ export class Tab1Page {
   ItinerarieStart: AddressDetails | undefined;
   ItinerarieEnd: AddressDetails | undefined;
 
-  ItineraryLayerState: boolean = false;
+ItineraryLayerState: boolean = false;
 
   constructor(
     public MtagService: MTAGAPIService,
+    public navCtrl: NavController,
     public favoritesService: FavoritesService
-  ) {}
+    ) {}
+
   //constructor() {}asdaw
 
   ionViewDidEnter() {
@@ -410,5 +413,9 @@ export class Tab1Page {
       this.map?.setView([data.lat, data.lon], 20);
       this.markerSearch.openPopup();
     });
+  }
+
+  goToItineary() {
+    this.navCtrl.navigateForward('/itineary-page');
   }
 }

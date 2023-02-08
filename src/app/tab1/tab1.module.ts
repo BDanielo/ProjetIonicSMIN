@@ -22,7 +22,6 @@ import { Tab1PageRoutingModule } from './tab1-routing.module';
   ],
   declarations: [
     Tab1Page,
-    // DropDownScheduleComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
 })
