@@ -60,25 +60,25 @@ export class ItinearyPagePage implements OnInit {
     '3376B8': '#3376B8',
   };
 
-  favorites: Favorite [] = [];
-  
+  favorites: Favorite[] = [];
+
   isFav = true;
   classSelectionFav = select;
   classSelectionRecent = '';
 
   isDepart = true;
   classSelectionDepart = select;
-  classSelectionArrival = "";
-  chosenDate = ""
+  classSelectionArrival = '';
+  chosenDate = '';
 
-  // fav1: Favorite = {
-  //   name: "Quai Stéphane Jay, 38000 Grenoble",
-  //   type: "location",
-  //   stationId: "",
-  //   line: "",
-  //   lat: 45.1970934,
-  //   lon: 5.7217403,
-  // }
+  fav1: Favorite = {
+    name: 'Quai Stéphane Jay, 38000 Grenoble',
+    type: 'location',
+    stationId: '',
+    line: '',
+    lat: 45.1970934,
+    lon: 5.7217403,
+  };
 
   // fav2: Favorite = {
   //   name: "1 Pl. de la Gare, 38000 Grenoble",
@@ -109,12 +109,12 @@ export class ItinearyPagePage implements OnInit {
 
   cancel() {
     this.modal.dismiss(null, 'cancel');
-
   }
 
   ngOnInit() {
-    this.favorites = this.favoritesService.getFavoritesByType("location");
-    }
+    this.favorites = this.favoritesService.getFavoritesByType('location');
+    this.favoritesService.addFavorite(this.fav1);
+  }
 
   goToMap() {
     this.modal.dismiss(null, 'cancel');
@@ -143,26 +143,23 @@ export class ItinearyPagePage implements OnInit {
     this.isFav = false;
   }
 
-  toggleDepart(){
-    this.classSelectionArrival = "";
+  toggleDepart() {
+    this.classSelectionArrival = '';
     this.classSelectionDepart = select;
     this.isDepart = true;
-}
+  }
 
-toggleArrival(){
-  this.classSelectionDepart = "";
-  this.classSelectionArrival = select;
-  this.isDepart = false;
-}
-
+  toggleArrival() {
+    this.classSelectionDepart = '';
+    this.classSelectionArrival = select;
+    this.isDepart = false;
   }
 
   favSelected(fav: Favorite) {
     console.log(fav);
   }
 
-  searchBarFocused(){
-  }
+  searchBarFocused() {}
 
   onSearchChange(direction: number) {
     this.SearchResultsTab[direction] = [];
