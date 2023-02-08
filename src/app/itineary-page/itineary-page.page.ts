@@ -1,4 +1,5 @@
 import { Favorite } from './../interfaces/favorite';
+
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { IonModal, NavController } from '@ionic/angular';
 import {
@@ -7,6 +8,7 @@ import {
   MTAGAPIService,
 } from '../services/mtag-api.service';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { FavoritesService } from '../services/favorites.service';
 
 const select = 'selected';
 
@@ -29,6 +31,7 @@ export class ItinearyPagePage implements OnInit {
 
   constructor(
     public MtagService: MTAGAPIService,
+    public favoritesService: FavoritesService,
     public navCtrl: NavController
   ) {
     this.navigationExtras = {
@@ -57,123 +60,61 @@ export class ItinearyPagePage implements OnInit {
     '3376B8': '#3376B8',
   };
 
+  favorites: Favorite [] = [];
+  
   isFav = true;
   classSelectionFav = select;
   classSelectionRecent = '';
 
-  //init favorites with value
-  favorites: Favorite[] = [
-    {
-      name: 'Gare de Lyon',
-      stationId: 'GDL',
-      line: 'A',
-      type: 'metro',
-      lat: 48.844,
-      lon: 2.374,
-    },
-    {
-      name: 'Gare de Lyon',
-      stationId: 'GDL',
-      line: 'B',
-      type: 'metro',
-      lat: 48.844,
-      lon: 2.374,
-    },
-    {
-      name: 'Gare de Lyon',
-      stationId: 'GDL',
-      line: 'C',
-      type: 'metro',
-      lat: 48.844,
-      lon: 2.374,
-    },
-    {
-      name: 'Gare de Lyon',
-      stationId: 'GDL',
-      line: 'C',
-      type: 'metro',
-      lat: 48.844,
-      lon: 2.374,
-    },
-    {
-      name: 'Gare de Lyon',
-      stationId: 'GDL',
-      line: 'C',
-      type: 'metro',
-      lat: 48.844,
-      lon: 2.374,
-    },
-    {
-      name: 'Gare de Lyon',
-      stationId: 'GDL',
-      line: 'C',
-      type: 'metro',
-      lat: 48.844,
-      lon: 2.374,
-    },
-    {
-      name: 'Gare de Lyon',
-      stationId: 'GDL',
-      line: 'C',
-      type: 'metro',
-      lat: 48.844,
-      lon: 2.374,
-    },
-    {
-      name: 'Gare de Lyon',
-      stationId: 'GDL',
-      line: 'C',
-      type: 'metro',
-      lat: 48.844,
-      lon: 2.374,
-    },
-    {
-      name: 'Gare de Lyon',
-      stationId: 'GDL',
-      line: 'C',
-      type: 'metro',
-      lat: 48.844,
-      lon: 2.374,
-    },
-    {
-      name: 'Gare de Lyon',
-      stationId: 'GDL',
-      line: 'C',
-      type: 'metro',
-      lat: 48.844,
-      lon: 2.374,
-    },
-    {
-      name: 'Gare de Lyon',
-      stationId: 'GDL',
-      line: 'C',
-      type: 'metro',
-      lat: 48.844,
-      lon: 2.374,
-    },
-    {
-      name: 'Gare de Lyon',
-      stationId: 'GDL',
-      line: 'C',
-      type: 'metro',
-      lat: 48.844,
-      lon: 2.374,
-    },
-    {
-      name: 'Gare de Lyon',
-      stationId: 'GDL',
-      line: 'C',
-      type: 'metro',
-      lat: 48.844,
-      lon: 2.374,
-    },
-  ];
+  isDepart = true;
+  classSelectionDepart = select;
+  classSelectionArrival = "";
+  chosenDate = ""
+
+  // fav1: Favorite = {
+  //   name: "Quai Stéphane Jay, 38000 Grenoble",
+  //   type: "location",
+  //   stationId: "",
+  //   line: "",
+  //   lat: 45.1970934,
+  //   lon: 5.7217403,
+  // }
+
+  // fav2: Favorite = {
+  //   name: "1 Pl. de la Gare, 38000 Grenoble",
+  //   type: "location",
+  //   stationId: "",
+  //   line: "",
+  //   lat: 45.1911984,
+  //   lon: 5.7137839,
+  // }
+
+  // fav3: Favorite = {
+  //   name: "17 Quai Claude Bernard, 38000 Grenoble",
+  //   type: "location",
+  //   stationId: "",
+  //   line: "",
+  //   lat: 45.1911455,
+  //   lon: 5.7146315,
+  // }
+
+  // fav4: Favorite = {
+  //   name: "Pl. Hubert Dubedout, 38000 Grenoble",
+  //   type: "location",
+  //   stationId: "",
+  //   line: "",
+  //   lat: 45.1936,
+  //   lon: 5.7207991,
+  // }
 
   cancel() {
     this.modal.dismiss(null, 'cancel');
+
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.favorites = this.favoritesService.getFavoritesByType("location");
+    }
 
   goToMap() {
     this.modal.dismiss(null, 'cancel');
@@ -202,8 +143,25 @@ export class ItinearyPagePage implements OnInit {
     this.isFav = false;
   }
 
+  toggleDepart(){
+    this.classSelectionArrival = "";
+    this.classSelectionDepart = select;
+    this.isDepart = true;
+}
+
+toggleArrival(){
+  this.classSelectionDepart = "";
+  this.classSelectionArrival = select;
+  this.isDepart = false;
+}
+
+  }
+
   favSelected(fav: Favorite) {
-    throw new Error('Method not implemented.');
+    console.log(fav);
+  }
+
+  searchBarFocused(){
   }
 
   onSearchChange(direction: number) {

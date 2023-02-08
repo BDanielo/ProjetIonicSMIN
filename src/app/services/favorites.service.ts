@@ -1,12 +1,15 @@
+import { StorageService } from './storage.service';
 import { Injectable } from '@angular/core';
-import { Storage } from '@ionic/storage';
+
 import { Favorite } from '../interfaces/favorite';
 
-const store = new Storage({
-  name: 'favoritesBDD',
-  storeName: 'favorites',
-});
 
+
+/*
+Type of favorite:
+- location
+- TramStation
+*/
 
 @Injectable({
   providedIn: 'root',
@@ -14,24 +17,30 @@ const store = new Storage({
 export class FavoritesService {
   public favorites: Array<Favorite> = [];
 
-  constructor() {
-    store.create().then(() => {
-      store.get('favorites').then((val) => {
-        if (val) {
-          this.favorites = val;
-        }
-      });
+  constructor(
+    public storageService: StorageService,
+  ) {
+    this.storageService.getFavorites().then((val) => {
+      if (val) {
+        console.log(val);
+        this.favorites = val;
+      }
     });
   }
   
   addFavorite(favorite: Favorite) {
     this.favorites.push(favorite);
-    store.set('favorites', this.favorites);
+    this.storageService.updateFavorite(this.favorites);
   }
 
   removeFavorite(favId: string, line: string) {
     this.favorites = this.favorites.filter((f) => f.stationId !== favId || f.line !== line);
-    store.set('favorites', this.favorites);
+    this.storageService.updateFavorite(this.favorites);
+  }
+
+  removeFavoriteByName(name: string, type: string) {
+    this.favorites = this.favorites.filter((f) => f.name !== name || f.type !== type);
+    this.storageService.updateFavorite(this.favorites);
   }
 
   getFavorites() {
@@ -39,6 +48,10 @@ export class FavoritesService {
   }
 
   getFavorite(name: string) {
+    return this.favorites.find((f) => f.name === name);
+  }
+
+  getFavoriteByType(name: string) {
     return this.favorites.find((f) => f.name === name);
   }
 

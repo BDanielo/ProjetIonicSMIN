@@ -18,6 +18,7 @@ export class DropDownScheduleComponent implements OnInit {
   @Input() lineName: string = 'B';
   @Input() isAlert: boolean = false;
   @Input() stationId: string = '';
+  @Input() type: string = 'tramStation';
   @Output() favChange = new EventEmitter<boolean>();
 
   linesSchedule: Array<LineSchedule> = [];
@@ -90,35 +91,44 @@ export class DropDownScheduleComponent implements OnInit {
   }
 
   toggleDropDown() {
-    this.favoritesService.IdIsFavorite(this.stationId, this.lineName)
-      ? (this.isFavorite = true)
-      : (this.isFavorite = false);
-
-    this.isOpen = !this.isOpen;
-    if (this.isOpen) {
-      this.getSchedule();
-      this.timerInterval = setInterval(() => {
+    if (this.type == 'tramStation'){
+      this.favoritesService.IdIsFavorite(this.stationId, this.lineName)
+        ? (this.isFavorite = true)
+        : (this.isFavorite = false);
+  
+      this.isOpen = !this.isOpen;
+      if (this.isOpen) {
         this.getSchedule();
-      }, 30000);
-    } else if (this.timerInterval != null) {
-      clearInterval(this.timerInterval);
+        this.timerInterval = setInterval(() => {
+          this.getSchedule();
+        }, 30000);
+      } else if (this.timerInterval != null) {
+        clearInterval(this.timerInterval);
+      }
     }
   }
 
   toggleFavorite() {
-    this.isFavorite = !this.isFavorite;
-    if (this.isFavorite) {
-      this.favoritesService.addFavorite({
-        name: this.name,
-        type: 'tramStation',
-        stationId: this.stationId,
-        line: this.lineName,
-        lat: 0,
-        lon: 0,
-      });
-    } else {
-      this.favoritesService.removeFavorite(this.stationId, this.lineName);
+    if (this.type == 'tramStation') {
+      this.isFavorite = !this.isFavorite;
+      if (this.isFavorite) {
+        this.favoritesService.addFavorite({
+          name: this.name,
+          type: 'tramStation',
+          stationId: this.stationId,
+          line: this.lineName,
+          lat: 0,
+          lon: 0,
+        });
+      } else {
+        this.favoritesService.removeFavorite(this.stationId, this.lineName);
+        this.favChange.emit();
+      }
+    }else {
+
+      this.favoritesService.removeFavoriteByName(this.name, this.type);
       this.favChange.emit();
+    
     }
   }
 }

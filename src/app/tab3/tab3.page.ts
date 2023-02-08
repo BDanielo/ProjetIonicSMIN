@@ -15,6 +15,7 @@ export class Tab3Page {
 
   ngOnInit() {
     this.favorites = this.favoritesService.getFavorites();
+    console.log(this.favorites);
   }
 
   ionViewWillEnter() {
