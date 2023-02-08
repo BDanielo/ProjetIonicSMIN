@@ -16,6 +16,7 @@ export interface leg {
   legGeometry: LegGeometry;
   duration: number;
   routeId: string;
+  routeColor: string;
 }
 
 export interface LegGeometry {
@@ -305,10 +306,25 @@ export class MTAGAPIService {
   }
 
   searchGeocoding(search: string) {
+    //alert(search);
     return new Promise((resolve, reject) => {
       let url =
         this.URLnominatimSearch +
         `?street=${encodeURI(search)}&county=Isere&format=json`;
+      this.http.get(url).subscribe((data: any) => {
+        console.log(search + ' url : ' + url);
+
+        this.reverseGeoCoding(data[0].lat, data[0].lon).then((data: any) => {
+          resolve(data);
+        });
+      });
+    });
+  }
+
+  searchSimpleGeoCoding(search: string) {
+    //alert(search);
+    return new Promise((resolve, reject) => {
+      let url = this.URLnominatimSearch + `?q=${encodeURI(search)}&format=json`;
       this.http.get(url).subscribe((data: any) => {
         console.log(search + ' url : ' + url);
 
@@ -330,26 +346,30 @@ export class MTAGAPIService {
 
         let list: AddressDetails[] = [];
 
-        data.forEach((element: any) => {
-          let tempAdr: AddressDetails = {
-            name: element.display_name,
-            lat: element.lat,
-            lon: element.lon,
-          };
+        if (data.length === 0) {
+          resolve(null);
+        } else {
+          data.forEach((element: any) => {
+            let tempAdr: AddressDetails = {
+              name: element.display_name,
+              lat: element.lat,
+              lon: element.lon,
+            };
 
-          // remove all character after Isère in name
-          let index = tempAdr.name.indexOf('Isère');
-          if (index > 0) {
-            tempAdr.name = tempAdr.name.substring(0, index - 1);
-          }
+            // remove all character after Isère in name
+            let index = tempAdr.name.indexOf('Isère');
+            if (index > 0) {
+              tempAdr.name = tempAdr.name.substring(0, index - 2);
+            }
 
-          list.push(tempAdr);
-          // if last element
-          if (element === data[data.length - 1]) {
-            // console.log(list);
-            resolve(list);
-          }
-        });
+            list.push(tempAdr);
+            // if last element
+            if (element === data[data.length - 1]) {
+              // console.log(list);
+              resolve(list);
+            }
+          });
+        }
       });
     });
   }
