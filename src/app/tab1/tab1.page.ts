@@ -78,8 +78,9 @@ export class Tab1Page {
   ) {
     this.route.queryParams.subscribe((params) => {
       this.currentItenary = params['itinerary'];
-      console.log('ICI');
-      console.log(this.currentItenary);
+      this.ItinerarieStart = params['start'];
+      this.ItinerarieEnd = params['end'];
+      this.drawItinerary();
     });
   }
 
@@ -298,7 +299,56 @@ export class Tab1Page {
     }
   }
 
-  drawItinerary() {}
+  drawItinerary() {
+    // remove all other layers (tram line, stations) and clear initerarie layer
+    this.map!.removeLayer(this.TramLineLayer);
+    this.map!.removeLayer(this.TramStationLayer);
+
+    // clear itinerarie layer
+    this.clearIteneraryLayer();
+
+    // add itinerarie layer
+    this.setItenararyLayer();
+
+    if (this.currentItenary != undefined) {
+      this.currentItenary.legs.forEach((leg: leg) => {
+        console.log(leg);
+
+        var polyline = L.Polyline.fromEncoded(leg.legGeometry.points);
+
+        if (leg.mode == 'WALK') {
+          polyline.setStyle({ color: 'red' });
+        } else {
+          polyline.setStyle({ color: '#' + leg.routeColor });
+        }
+
+        this.ItinerarieLayer.addLayer(polyline);
+
+        // add start and end markers
+        this.ItinerarieStartMarker = L.marker([
+          this.ItinerarieStart!.lat,
+          this.ItinerarieStart!.lon,
+        ]).addTo(this.map!);
+        this.ItinerarieStartMarker.bindPopup(
+          'Départ : ' + this.ItinerarieStart!.name
+        );
+
+        this.ItinerarieEndMarker = L.marker([
+          this.ItinerarieEnd!.lat,
+          this.ItinerarieEnd!.lon,
+        ]).addTo(this.map!);
+        this.ItinerarieEndMarker.bindPopup(
+          'Arrivée : ' + this.ItinerarieEnd!.name
+        );
+
+        // set map view to start marker
+        this.map!.setView(
+          [this.ItinerarieStart!.lat, this.ItinerarieStart!.lon],
+          20
+        );
+      });
+    }
+  }
 
   // get tram lines add them to a layer and add the layer to the map
   markLines() {
