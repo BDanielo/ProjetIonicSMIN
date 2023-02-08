@@ -60,6 +60,10 @@ export class MTAGAPIService {
   public TramLines: TramLine[] = [];
   public TramStations: StationsOfLine[] = [];
 
+  public currentItinerary: Itineraries | undefined;
+
+  itineraryEvent: any;
+
   constructor(private http: HttpClient) {}
 
   // get stop times from station id and line id | use TramStations.TramTramStation.id and TramStations.TramLines.id
@@ -245,6 +249,54 @@ export class MTAGAPIService {
     });
   }
 
+  calcItinerarys(
+    from: GeoPoint,
+    to: GeoPoint,
+    arriveBy: boolean,
+    time: string,
+    date: string
+  ) {
+    return new Promise((resolve, reject) => {
+      var url =
+        this.mtagApiUrl +
+        this.URLitineraire +
+        '?routerId=prod&otp=undefined&mode=TRANSIT&showIntermediateStops=true&numItineraries=5&' +
+        `fromPlace=${from.lat},${from.lon}&toPlace=${to.lat},${to.lon}&arriveBy=${arriveBy}&time=${time}&date=${date}&locale=fr_FR`;
+      let dateNow = new Date();
+
+      time = dateNow.getHours() + ':' + dateNow.getMinutes();
+
+      date =
+        dateNow.getFullYear() +
+        '-' +
+        dateNow.getMonth() +
+        '-' +
+        dateNow.getDay();
+
+      this.http
+        .get(url, {
+          headers: {
+            Origin: 'https://www.armieux.fr',
+          },
+        })
+        .subscribe((data: any) => {
+          // console.log('CALC ITINERARY');
+          // console.log(url);
+          // console.log(data);
+          let test: string[] = [];
+          // chaques itinéraires
+          let Itinerarie: Itineraries = {
+            duration: 0,
+            legs: [],
+            startTime: 0,
+            endTime: 0,
+          };
+          resolve(data.plan.itineraries);
+          return data.plan.itineraries;
+        });
+    });
+  }
+
   getTramStationsOfLine(id: string) {
     this.getAllTramStations();
     return this.TramStations.find((element) => element.Line === id);
@@ -335,11 +387,18 @@ export class MTAGAPIService {
     });
   }
 
-  searchAutocomplete(search: string) {
+  searchAutocomplete(search: string, retry: boolean = false) {
     return new Promise((resolve, reject) => {
-      let url =
-        this.URLnominatimSearch +
-        `?street=${encodeURI(search)}&county=Isere&limit=5&format=json`;
+      let url = '';
+      if (retry) {
+        url =
+          this.URLnominatimSearch +
+          `?q=${encodeURI(search)}&limit=5&format=json`;
+      } else {
+        url =
+          this.URLnominatimSearch +
+          `?street=${encodeURI(search)}&county=Isere&limit=5&format=json`;
+      }
       this.http.get(url).subscribe((data: any) => {
         console.log(search + ' url : ' + url);
         console.log(data);
@@ -347,7 +406,11 @@ export class MTAGAPIService {
         let list: AddressDetails[] = [];
 
         if (data.length === 0) {
-          resolve(null);
+          if (retry) {
+            resolve(null);
+          } else {
+            resolve(this.searchAutocomplete(search, true));
+          }
         } else {
           data.forEach((element: any) => {
             let tempAdr: AddressDetails = {
