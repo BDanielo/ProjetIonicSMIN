@@ -38,6 +38,8 @@ export class Tab1Page {
   ItinerarieLayer: any;
   TramStationLayer: any;
 
+  localisationMarker: any;
+
   markerSearch: any;
   markerSearchFav: boolean = false;
   markerSearchInfo: AddressDetails = {} as AddressDetails;
@@ -83,9 +85,19 @@ export class Tab1Page {
     this.route.queryParams.subscribe((params) => {
       // check if the url contain a intinerary
       if (params['itinerary']) {
-        this.currentItenary = params['itinerary'];
-        this.ItinerarieStart = params['start'];
-        this.ItinerarieEnd = params['end'];
+        if (params['itinerary'].legs != undefined) {
+          this.currentItenary = params['itinerary'];
+          this.ItinerarieStart = params['start'];
+          this.ItinerarieEnd = params['end'];
+        } else {
+          this.currentItenary = {
+            duration: 0,
+            startTime: 0,
+            endTime: 0,
+            legs: [],
+          };
+        }
+
         // check if map is loaded
         if (this.map) {
           this.drawItinerary();
@@ -119,40 +131,80 @@ export class Tab1Page {
     // add tram station layer
     this.TramStationLayer = L.layerGroup().addTo(this.map);
 
-    // add marker IUT1
-    const IUT1 = leaflet
-      .marker([45.19270700749426, 5.718059703818313])
-      .addTo(this.map);
-    IUT1.bindPopup('IUT1');
-    this.map.addLayer(IUT1);
-
     this.markLines();
 
     if (this.currentItenary.legs.length > 0) {
       this.drawItinerary();
     } else {
       // get localisation
-      this.getLocation();
+      this.getLocation().then((position: any) => {
+        this.MtagService.getClosestStation(position).then((station) => {
+          console.log('closest station : ', station);
+        });
+      });
     }
   }
 
-  getLocation(): Promise<Position> {
+  // the function creates colorful svg
+  colorMarker(color: string, type: boolean = false) {
+    let svgTemplate = ``;
+    if (type) {
+      svgTemplate = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="25" fill="${color}"/></svg>`;
+    } else {
+      svgTemplate = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="marker">
+      <path fill-opacity=".25" d="M16 32s1.427-9.585 3.761-12.025c4.595-4.805 8.685-.99 8.685-.99s4.044 3.964-.526 8.743C25.514 30.245 16 32 16 32z"/>
+      <path stroke="#fff" fill="${color}" d="M15.938 32S6 17.938 6 11.938C6 .125 15.938 0 15.938 0S26 .125 26 11.875C26 18.062 15.938 32 15.938 32zM16 6a4 4 0 100 8 4 4 0 000-8z"/>
+    </svg>`;
+    }
+
+    const icon = L.divIcon({
+      className: 'marker',
+      html: svgTemplate,
+      iconSize: [40, 40],
+      iconAnchor: [12, 24],
+      popupAnchor: [7, -16],
+    });
+
+    return icon;
+  }
+
+  // create a marker with a blue circle
+  createMarker(lat: number, lon: number, popup: string, type: boolean = false) {
+    const marker = L.marker([lat, lon], {
+      icon: this.colorMarker('#0000ff', type),
+    }).addTo(this.map!);
+    marker.bindPopup(popup);
+    return marker;
+  }
+
+  getLocation(): Promise<GeoPoint> {
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition()
         .then((position: any) => {
-          // console.log('location from service : ', position);
-          resolve(position);
+          console.log('location from service : ', position);
+          let tmpGeoPoint: GeoPoint = {
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+          };
+          resolve(tmpGeoPoint);
           // set map localisation
           this.map?.setView(
             [position.coords.latitude, position.coords.longitude],
             20
           );
-          // add marker localisation
-          const localisation = L.marker([
-            position.coords.latitude,
-            position.coords.longitude,
-          ]).addTo(this.map!);
-          localisation.bindPopup('Localisation');
+          // remove old marker
+          if (this.localisationMarker) {
+            this.localisationMarker.remove();
+          }
+
+          this.localisationMarker = L.marker(
+            [position.coords.latitude, position.coords.longitude],
+            {
+              icon: this.colorMarker('#0000ff', true),
+            }
+          ).addTo(this.map!);
+          this.localisationMarker.bindPopup('Vous êtes ici');
         })
         .catch((error) => {
           reject(error);
@@ -168,6 +220,7 @@ export class Tab1Page {
   removeIteneraryLayer() {
     this.ItineraryLayerState = false;
     this.ItinerarieLayer.remove();
+    // remove start and end markers
   }
 
   clearIteneraryLayer() {
@@ -215,7 +268,7 @@ export class Tab1Page {
     this.MtagService.calcItinerary(from, to, false, '', '').then(
       (data: any) => {
         data.legs.forEach((leg: leg) => {
-          console.log(leg);
+          //console.log(leg);
 
           var polyline = L.Polyline.fromEncoded(leg.legGeometry.points);
 
@@ -299,7 +352,7 @@ export class Tab1Page {
 
     if (this.currentItenary != undefined) {
       this.currentItenary.legs.forEach((leg: leg) => {
-        console.log(leg);
+        //console.log(leg);
 
         // create a polyline from a decoded traject geometry
         var polyline = L.Polyline.fromEncoded(leg.legGeometry.points);
@@ -323,18 +376,22 @@ export class Tab1Page {
         }
 
         // add start and end markers
-        this.ItinerarieStartMarker = L.marker([
-          this.ItinerarieStart!.lat,
-          this.ItinerarieStart!.lon,
-        ]).addTo(this.map!);
+        this.ItinerarieStartMarker = L.marker(
+          [this.ItinerarieStart!.lat, this.ItinerarieStart!.lon],
+          {
+            icon: this.colorMarker('#ff0000'),
+          }
+        ).addTo(this.map!);
         this.ItinerarieStartMarker.bindPopup(
           'Départ : ' + this.ItinerarieStart!.name
         );
 
-        this.ItinerarieEndMarker = L.marker([
-          this.ItinerarieEnd!.lat,
-          this.ItinerarieEnd!.lon,
-        ]).addTo(this.map!);
+        this.ItinerarieEndMarker = L.marker(
+          [this.ItinerarieEnd!.lat, this.ItinerarieEnd!.lon],
+          {
+            icon: this.colorMarker('#0000ff'),
+          }
+        ).addTo(this.map!);
         this.ItinerarieEndMarker.bindPopup(
           'Arrivée : ' + this.ItinerarieEnd!.name
         );
@@ -351,6 +408,13 @@ export class Tab1Page {
   // get tram lines add them to a layer and add the layer to the map
   markLines() {
     return new Promise((resolve, reject) => {
+      if (this.ItinerarieStartMarker != undefined) {
+        this.map!.removeLayer(this.ItinerarieStartMarker);
+      }
+      if (this.ItinerarieEndMarker != undefined) {
+        this.map!.removeLayer(this.ItinerarieEndMarker);
+      }
+
       this.map!.removeLayer(this.ItinerarieLayer);
       this.map!.removeLayer(this.TramStationLayer);
       this.TramLineLayer = L.layerGroup().addTo(this.map);
@@ -383,7 +447,7 @@ export class Tab1Page {
     this.markLines().then(() => {
       this.TramStationLayer = L.layerGroup().addTo(this.map);
       this.MtagService.getAllTramStations().then((data: any) => {
-        console.log(data);
+        //console.log(data);
         data.forEach((line: StationsOfLine) => {
           line.TramStation.forEach((station: TramStation) => {
             const marker = L.marker([station.lat, station.lon]).addTo(
@@ -413,7 +477,7 @@ export class Tab1Page {
   }
 
   changeSearch(direction: number, value: string) {
-    console.log('direction : ' + direction + ' value : ' + value);
+    //console.log('direction : ' + direction + ' value : ' + value);
     this.SearchResultsTab[direction] = [];
     if (direction == 0) {
       this.fromSearch = value;
@@ -440,10 +504,8 @@ export class Tab1Page {
 
   toggleMarkerSearchFav() {
     //alert('toggleMarkerSearchFav');
-    console.log('TOGGLE FAV');
     this.markerSearchFav = !this.markerSearchFav;
     if (this.markerSearchFav) {
-      console.log('ADD FAV');
       this.favoritesService.addFavorite({
         name: this.markerSearchInfo.name,
         type: 'location',
@@ -453,7 +515,6 @@ export class Tab1Page {
         lon: this.markerSearchInfo.lon,
       });
     } else {
-      console.log('REMOVE FAV');
       this.favoritesService.removeFavoriteByName(
         this.markerSearchInfo.name,
         'location'
@@ -464,8 +525,6 @@ export class Tab1Page {
   search(lat: number, lon: number) {
     this.SearchResultsTab[0] = [];
     this.MtagService.reverseGeoCoding(lat, lon).then((data: any) => {
-      console.log('HERE');
-      console.log(data.name);
       this.SearchResults = data;
       if (this.markerSearch) this.map?.removeLayer(this.markerSearch);
       this.markerSearch = L.marker([data.lat, data.lon]).addTo(this.map!);
@@ -477,13 +536,6 @@ export class Tab1Page {
         >-> Aller vers</ion-button>`;
 
       let buttonFav = `<button *ngIf="markerSearchFav" onclick="toggleMarkerSearchFav()"><ion-icon name="heart"></ion-icon></button>`;
-
-      console.log('markerSearchFav');
-      console.log(this.markerSearchFav);
-      console.log(this.markerSearchInfo);
-
-      console.log('FAV');
-      console.log(this.markerSearchFav);
 
       this.markerSearchFav = this.favoritesService.isFavorite({
         name: data.name,
@@ -514,10 +566,6 @@ export class Tab1Page {
           lat: data.lat,
           lon: data.lon,
         });
-
-        console.log('FAV REFRESH');
-        console.log(this.markerSearchFav);
-        console.log(data.name);
 
         let popupelement = document.getElementById('popupMarkSearch');
         let btns = document.getElementById('btnFavMarker');

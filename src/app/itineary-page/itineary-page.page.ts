@@ -156,19 +156,16 @@ export class ItinearyPagePage implements OnInit {
       this.MtagService.reverseGeoCoding(fav.lat, fav.lon, true).then(
         (res: any) => {
           this.fromSearchConfirmed = res.name;
-          console.log('ICIFDP');
           console.log(this.fromSearchConfirmed);
         }
       );
-      this.toSearchConfirmed = fav.name;
       this.isFrom = false;
     } else {
       this.toSearch = fav.name;
       this.MtagService.reverseGeoCoding(fav.lat, fav.lon, true).then(
         (res: any) => {
-          this.fromSearchConfirmed = res.name;
-          console.log('ICIFDP');
-          console.log(this.fromSearchConfirmed);
+          this.toSearchConfirmed = res.name;
+          console.log(this.toSearchConfirmed);
         }
       );
       this.isFrom = true;
@@ -178,24 +175,11 @@ export class ItinearyPagePage implements OnInit {
   recentSelected(recent: Recent) {
     if (this.isFrom) {
       this.fromSearch = recent.name;
-      this.MtagService.reverseGeoCoding(recent.lat, recent.lon, true).then(
-        (res: any) => {
-          this.fromSearchConfirmed = res.name;
-          console.log('ICIFDP');
-          console.log(this.fromSearchConfirmed);
-        }
-      );
-      this.toSearchConfirmed = recent.name;
+      this.fromSearchConfirmed = recent.name;
       this.isFrom = false;
     } else {
       this.toSearch = recent.name;
-      this.MtagService.reverseGeoCoding(recent.lat, recent.lon, true).then(
-        (res: any) => {
-          this.fromSearchConfirmed = res.name;
-          console.log('ICIFDP');
-          console.log(this.fromSearchConfirmed);
-        }
-      );
+      this.toSearchConfirmed = recent.name;
       this.isFrom = true;
     }
   }

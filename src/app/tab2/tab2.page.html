@@ -20,9 +20,16 @@
   <app-drop-down-schedule
     [name]="'Gare Grenoble'"
     [lineName]="'B'"
-    [isAlert]="true"
+    [stationId]="1"
+    [type]="tramStation"
   >
   </app-drop-down-schedule> -->
+  <!-- <div *ngFor="let line of tramStationsClosest">
+    <app-global-drop-down
+      lineName="Arrets proche"
+      [tramStations]="line.TramStation"
+    ></app-global-drop-down>
+  </div> -->
 
   <div *ngFor="let line of tramStations">
     <app-global-drop-down

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { LineSchedule } from '../interfaces/line-schedule';
 import { TramLine } from '../interfaces/tram-line';
 import { StationsOfLine } from '../interfaces/stations-of-line';
+import { TramStation } from '../interfaces/tram-station';
 
 export interface Itineraries {
   duration: number;
@@ -56,6 +57,8 @@ export class MTAGAPIService {
   private URLnominatimSearch = 'https://nominatim.openstreetmap.org/search';
 
   private URLnominatimReverse = 'https://nominatim.openstreetmap.org/reverse';
+
+  private URLclosest = 'linesNear/json?x=:lon&y=:lat&dist=:dist&details=true';
 
   public TramLines: TramLine[] = [];
   public TramStations: StationsOfLine[] = [];
@@ -181,6 +184,26 @@ export class MTAGAPIService {
       } else {
         resolve(this.TramStations);
       }
+    });
+  }
+
+  convertStopToCluster(line: string, stop: string) {
+    return new Promise<TramStation>((resolve, reject) => {
+      // get all characters after the first ,
+      stop = stop.substring(stop.indexOf(',') + 2);
+      this.getAllTramStations().then((data) => {
+        // fine the line
+        let lineIndex = this.TramStations.findIndex(
+          (element) => element.Line == line
+        );
+        // find the stop
+        let stopIndex = this.TramStations[lineIndex].TramStation.findIndex(
+          (element) => element.name == stop
+        );
+
+        let cluster = this.TramStations[lineIndex].TramStation[stopIndex];
+        resolve(cluster);
+      });
     });
   }
 
@@ -320,7 +343,7 @@ export class MTAGAPIService {
         this.URLnominatimReverse +
         `?lat=${lat}&lon=${lon}&namedetails=1&addressdetails=1&format=json`;
       this.http.get(url).subscribe((data: any) => {
-        console.log('POS :' + lat + ',' + lon + ' url : ' + url);
+        //console.log('POS :' + lat + ',' + lon + ' url : ' + url);
         // console.log(data);
 
         let nameAdr: string = '';
@@ -353,7 +376,7 @@ export class MTAGAPIService {
           lat: data.lat,
           lon: data.lon,
         };
-        console.log(adresse);
+        //console.log(adresse);
 
         resolve(adresse);
       });
@@ -367,7 +390,7 @@ export class MTAGAPIService {
         this.URLnominatimSearch +
         `?street=${encodeURI(search)}&county=Isere&format=json`;
       this.http.get(url).subscribe((data: any) => {
-        console.log(search + ' url : ' + url);
+        //console.log(search + ' url : ' + url);
 
         this.reverseGeoCoding(data[0].lat, data[0].lon).then((data: any) => {
           resolve(data);
@@ -381,7 +404,7 @@ export class MTAGAPIService {
     return new Promise((resolve, reject) => {
       let url = this.URLnominatimSearch + `?q=${encodeURI(search)}&format=json`;
       this.http.get(url).subscribe((data: any) => {
-        console.log(search + ' url : ' + url);
+        //console.log(search + ' url : ' + url);
 
         this.reverseGeoCoding(data[0].lat, data[0].lon).then((data: any) => {
           resolve(data);
@@ -403,8 +426,8 @@ export class MTAGAPIService {
           `?street=${encodeURI(search)}&county=Isere&limit=5&format=json`;
       }
       this.http.get(url).subscribe((data: any) => {
-        console.log(search + ' url : ' + url);
-        console.log(data);
+        //console.log(search + ' url : ' + url);
+        //console.log(data);
 
         let list: AddressDetails[] = [];
 
@@ -436,6 +459,72 @@ export class MTAGAPIService {
             }
           });
         }
+      });
+    });
+  }
+
+  // get the closest station from position
+  getClosestStation(geoPoint: GeoPoint) {
+    return new Promise<StationsOfLine>((resolve, reject) => {
+      let lat = Math.round(geoPoint.lat * 100) / 100;
+      let lon = Math.round(geoPoint.lon * 100) / 100;
+      let url =
+        this.mtagApiUrl +
+        this.URLclosest.replace(':lat', lat.toString())
+          .replace(':lon', lon.toString())
+          .replace(':dist', '300');
+
+      this.http.get(url).subscribe((data: any) => {
+        // console.log('POS :' + lat + ',' + lon + ' url : ' + url);
+        // console.log(data);
+
+        // limit data to 5 element
+        if (data.length > 5) {
+          data = data.slice(0, 5);
+        }
+        let tmpList: StationsOfLine = {
+          Line: 'custom',
+          TramStation: [],
+        };
+        let count = 0;
+
+        data.forEach((element: any) => {
+          this.convertStopToCluster(element.lines[0], element.name).then(
+            (data2: TramStation) => {
+              // let Station: StationsOfLine = {
+              //   Line: 'custom',
+              //   TramStation: [data2],
+              // };
+
+              let Station: TramStation = data2;
+
+              // // check if station with the same line already exist, and if yes replace it
+              // let index = tmpList.findIndex((x) => x.Line === Station.Line);
+              // if (index > -1) {
+              //   tmpList[index].TramStation.push(Station.TramStation[0]);
+              // } else {
+              //   tmpList.push(Station);
+              // }
+              tmpList.TramStation.push(Station);
+
+              console.log('TMP LIST');
+              console.log(tmpList);
+              count++;
+              console.log('COUNT : ' + count + ' / ' + data.length);
+              if (count == data.length) {
+                console.log('FINISHED');
+
+                // filter duplicate station based on station name
+                tmpList.TramStation = tmpList.TramStation.filter(
+                  (thing, index, self) =>
+                    index === self.findIndex((t) => t.name === thing.name)
+                );
+
+                resolve(tmpList);
+              }
+            }
+          );
+        });
       });
     });
   }
