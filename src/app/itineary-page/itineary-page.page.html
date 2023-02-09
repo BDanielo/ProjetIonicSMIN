@@ -85,14 +85,16 @@
           <ion-content [scrollEvents]="true">
             <ion-list *ngIf="isFav">
               <ion-item *ngFor="let fav of favorites">
-                <ion-label (click)="favSelected(fav.name)">{{ fav.name }}</ion-label>
+                <ion-label (click)="favSelected(fav)">{{ fav.name }}</ion-label>
               </ion-item>
             </ion-list>
           </ion-content>
           <ion-list *ngIf="!isFav">
             <ion-content [scrollEvents]="true">
               <ion-item *ngFor="let recent of recents">
-                <ion-label (click)="favSelected(recent.name)">{{ recent.name }}</ion-label>
+                <ion-label (click)="recentSelected(recent)"
+                  >{{ recent.name }}</ion-label
+                >
               </ion-item>
             </ion-content>
           </ion-list>
@@ -140,14 +142,16 @@
               >
                 <ion-list-header>
                   <ion-title>Itinéraire {{ index+1 }}</ion-title>
-                  <ion-icon name="chevron-forward-outline" color="white"></ion-icon>  
+                  <ion-icon
+                    name="chevron-forward-outline"
+                    color="white"
+                  ></ion-icon>
                 </ion-list-header>
 
                 <ion-item-divider>
                   <div class="hours">
                     <span>
-                      Départ: {{ convertTimestamp(itinerary.startTime)
-                      }}
+                      Départ: {{ convertTimestamp(itinerary.startTime) }}
                     </span>
                     <span>
                       Durée : {{ convertSecondsToMinutes(itinerary.duration) }}

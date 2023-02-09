@@ -314,7 +314,7 @@ export class MTAGAPIService {
     });
   }
 
-  reverseGeoCoding(lat: number, lon: number) {
+  reverseGeoCoding(lat: number, lon: number, details: boolean = false) {
     return new Promise((resolve, reject) => {
       let url =
         this.URLnominatimReverse +
@@ -324,24 +324,27 @@ export class MTAGAPIService {
         // console.log(data);
 
         let nameAdr: string = '';
-
-        if (data.address.amenity != undefined) {
-          nameAdr += data.address.amenity;
+        if (details) {
+          nameAdr = data.display_name;
         } else {
-          if (data.address.house_number != undefined) {
-            nameAdr += data.address.house_number + ' ';
-          }
+          if (data.address.amenity != undefined) {
+            nameAdr += data.address.amenity;
+          } else {
+            if (data.address.house_number != undefined) {
+              nameAdr += data.address.house_number + ' ';
+            }
 
-          if (data.address.road != undefined) {
-            nameAdr += data.address.road;
-          }
+            if (data.address.road != undefined) {
+              nameAdr += data.address.road;
+            }
 
-          if (data.address.town != undefined) {
-            nameAdr += ', ' + data.address.town;
-          }
+            if (data.address.town != undefined) {
+              nameAdr += ', ' + data.address.town;
+            }
 
-          if (data.address.city != undefined) {
-            nameAdr += ', ' + data.address.city;
+            if (data.address.city != undefined) {
+              nameAdr += ', ' + data.address.city;
+            }
           }
         }
 

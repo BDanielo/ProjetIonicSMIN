@@ -103,6 +103,16 @@ export class ItinearyPagePage implements OnInit {
     });
   }
 
+  // on page enter
+  ionViewDidEnter() {
+    this.favorites = this.favoritesService.getFavoritesByType('location');
+    this.storageService.getRecent().then((val) => {
+      if (val) {
+        this.recents = val;
+      }
+    });
+  }
+
   goToMap() {
     this.modal.dismiss(null, 'cancel');
     this.navCtrl.navigateForward('/tabs/tab1');
@@ -144,14 +154,52 @@ export class ItinearyPagePage implements OnInit {
     this.isDepart = false;
   }
 
-  favSelected(fav: string) {
+  favSelected(fav: Favorite) {
     if (this.isFrom) {
-      this.fromSearch = fav;
-      this.toSearchConfirmed = fav
+      this.fromSearch = fav.name;
+      this.MtagService.reverseGeoCoding(fav.lat, fav.lon, true).then(
+        (res: any) => {
+          this.fromSearchConfirmed = res.name;
+          console.log('ICIFDP');
+          console.log(this.fromSearchConfirmed);
+        }
+      );
+      this.toSearchConfirmed = fav.name;
       this.isFrom = false;
     } else {
-      this.toSearch = fav;
-      this.fromSearchConfirmed = fav
+      this.toSearch = fav.name;
+      this.MtagService.reverseGeoCoding(fav.lat, fav.lon, true).then(
+        (res: any) => {
+          this.fromSearchConfirmed = res.name;
+          console.log('ICIFDP');
+          console.log(this.fromSearchConfirmed);
+        }
+      );
+      this.isFrom = true;
+    }
+  }
+
+  recentSelected(recent: Recent) {
+    if (this.isFrom) {
+      this.fromSearch = recent.name;
+      this.MtagService.reverseGeoCoding(recent.lat, recent.lon, true).then(
+        (res: any) => {
+          this.fromSearchConfirmed = res.name;
+          console.log('ICIFDP');
+          console.log(this.fromSearchConfirmed);
+        }
+      );
+      this.toSearchConfirmed = recent.name;
+      this.isFrom = false;
+    } else {
+      this.toSearch = recent.name;
+      this.MtagService.reverseGeoCoding(recent.lat, recent.lon, true).then(
+        (res: any) => {
+          this.fromSearchConfirmed = res.name;
+          console.log('ICIFDP');
+          console.log(this.fromSearchConfirmed);
+        }
+      );
       this.isFrom = true;
     }
   }
@@ -198,18 +246,17 @@ export class ItinearyPagePage implements OnInit {
     }
   }
 
-  updateRecent(val: string){
+  updateRecent(val: string) {
     let tmp = this.recents.filter((recent) => recent.name == val);
     if (tmp.length > 0) {
       return;
     }
     if (this.recents.length > 4) {
-      this.recents.pop()
+      this.recents.pop();
     }
 
-    this.recents.unshift({name: val, lat: 0, lon: 0});
+    this.recents.unshift({ name: val, lat: 0, lon: 0 });
     this.storageService.updateRecent(this.recents);
-
   }
 
   searchAutocomplete(event: any, direction: number) {

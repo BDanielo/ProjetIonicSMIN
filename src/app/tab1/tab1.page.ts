@@ -124,13 +124,13 @@ export class Tab1Page {
     IUT1.bindPopup('IUT1');
     this.map.addLayer(IUT1);
 
-    // get localisation
-    this.getLocation();
-
     this.markLines();
 
     if (this.currentItenary.legs.length > 0) {
       this.drawItinerary();
+    } else {
+      // get localisation
+      this.getLocation();
     }
   }
 
@@ -459,6 +459,8 @@ export class Tab1Page {
   search(lat: number, lon: number) {
     this.SearchResultsTab[0] = [];
     this.MtagService.reverseGeoCoding(lat, lon).then((data: any) => {
+      console.log('HERE');
+      console.log(data.name);
       this.SearchResults = data;
       if (this.markerSearch) this.map?.removeLayer(this.markerSearch);
       this.markerSearch = L.marker([data.lat, data.lon]).addTo(this.map!);
