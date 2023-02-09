@@ -4,6 +4,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { IonModal, NavController } from '@ionic/angular';
 import {
   AddressDetails,
+  GeoPoint,
   Itineraries,
   MTAGAPIService,
 } from '../services/mtag-api.service';
@@ -73,6 +74,10 @@ export class ItinearyPagePage implements OnInit {
   classSelectionArrival = '';
   chosenDate = '';
 
+  StartItineraryMarker: AddressDetails | undefined;
+
+  EndItineraryMarker: AddressDetails | undefined;
+
   fav1: Favorite = {
     name: 'Quai Stéphane Jay, 38000 Grenoble',
     type: 'location',
@@ -81,33 +86,6 @@ export class ItinearyPagePage implements OnInit {
     lat: 45.1970934,
     lon: 5.7217403,
   };
-
-  // fav2: Favorite = {
-  //   name: "1 Pl. de la Gare, 38000 Grenoble",
-  //   type: "location",
-  //   stationId: "",
-  //   line: "",
-  //   lat: 45.1911984,
-  //   lon: 5.7137839,
-  // }
-
-  // fav3: Favorite = {
-  //   name: "17 Quai Claude Bernard, 38000 Grenoble",
-  //   type: "location",
-  //   stationId: "",
-  //   line: "",
-  //   lat: 45.1911455,
-  //   lon: 5.7146315,
-  // }
-
-  // fav4: Favorite = {
-  //   name: "Pl. Hubert Dubedout, 38000 Grenoble",
-  //   type: "location",
-  //   stationId: "",
-  //   line: "",
-  //   lat: 45.1936,
-  //   lon: 5.7207991,
-  // }
 
   cancel() {
     this.modal.dismiss(null, 'cancel');
@@ -128,6 +106,8 @@ export class ItinearyPagePage implements OnInit {
     this.navigationExtras = {
       queryParams: {
         itinerary: itinerary,
+        start: this.StartItineraryMarker,
+        end: this.EndItineraryMarker,
       },
     };
     this.navCtrl.navigateForward('/tabs/tab1', this.navigationExtras);
@@ -243,17 +223,43 @@ export class ItinearyPagePage implements OnInit {
     this.MtagService.searchSimpleGeoCoding(this.fromSearchConfirmed).then(
       (data: any) => {
         let from = data;
+        this.StartItineraryMarker = from;
         this.MtagService.searchSimpleGeoCoding(this.toSearchConfirmed).then(
           (data: any) => {
             let to = data;
-            this.MtagService.calcItinerarys(from, to, false, '', '').then(
-              (data: any) => {
-                this.ItinaryLoading = false;
-                console.log(data);
-                this.itinerarys = data;
-                console.log(this.itinerarys);
-              }
-            );
+            this.EndItineraryMarker = to;
+            let date = new Date(this.chosenDate);
+            if (this.chosenDate == '') {
+              date = new Date();
+            }
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            let time = hours + ':' + minutes;
+            console.log(time);
+
+            // parse date in format YYYY-MM-DD
+            let day = date.getDate();
+            let month = date.getMonth() + 1;
+            let year = date.getFullYear();
+            let dateStr = year + '-' + month + '-' + day;
+            console.log(dateStr);
+            this.MtagService.calcItinerarys(
+              from,
+              to,
+              !this.isDepart,
+              time,
+              dateStr
+            ).then((data: any) => {
+              this.ItinaryLoading = false;
+              console.log(data);
+              this.itinerarys = data;
+              console.log(this.itinerarys);
+
+              // sort itineraries by duration
+              this.itinerarys.sort((a, b) => {
+                return a.duration - b.duration;
+              });
+            });
           }
         );
       }
@@ -261,4 +267,8 @@ export class ItinearyPagePage implements OnInit {
   }
 
   showItenerarys() {}
+
+  convertRouteColor(color: string) {
+    return '#' + color;
+  }
 }

@@ -20,29 +20,7 @@
     </ion-item>
   </ion-list>
 </ion-header>
-<!-- <ion-button *ngIf="markerSearchFav" (click)="toggleMarkerSearchFav()"
-  ><ion-icon name="heart"></ion-icon
-></ion-button>
-<ion-button *ngIf="!markerSearchFav" (click)="toggleMarkerSearchFav()"
-  ><ion-icon name="heart-outline"></ion-icon
-></ion-button> -->
-<style>
-  .Itinerary {
-    position: absolute;
-    bottom: 75px;
-    right: 10px;
-    z-index: 1000;
-    font-size: 50px;
-    /* center text */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 55px;
-    height: 55px;
-    color: black;
-    background-color: lightblue;
-  }
-</style>
+<style></style>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
@@ -52,9 +30,70 @@
   </ion-header>
 
   <div id="map" style="width: 100%; height: 100%"></div>
-  <div class="Itinerary" (click)="goToItineary()">
-    <ion-icon name="arrow-redo"></ion-icon>
-  </div>
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="goToItineary()">
+      <ion-icon name="arrow-redo"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
-  <!-- create a search bar on top center  -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="center">
+    <ion-fab-button id="open-modal-2">
+      <ion-icon name="chevron-up-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-modal trigger="open-modal-2">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="exitModal()">Annuler</ion-button>
+          </ion-buttons>
+          <ion-title>Itineraires</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div *ngIf="ItineraryLayerState">
+          <p>Itineraire actuel</p>
+          <p>heure depart: {{convertTimestamp(currentItenary.startTime)}}</p>
+          <p>heure arrivee: {{convertTimestamp(currentItenary.endTime)}}</p>
+          <p>Duree: {{convertSecondsToMinutes(currentItenary.duration)}}</p>
+          <ion-list>
+            <ion-item
+              *ngFor="let leg of currentItenary.legs"
+              style="background-color:{{convertRouteColor(leg.routeColor)}};"
+              [attr.custColor]="leg.routeColor"
+            >
+              <div
+                style="background-color:{{convertRouteColor(leg.routeColor)}};"
+              >
+                <ion-icon
+                  *ngIf="leg.mode==='WALK'"
+                  name="walk"
+                  color="white"
+                ></ion-icon>
+                <!-- icon tram -->
+                <ion-icon
+                  *ngIf="leg.mode==='TRAIN'"
+                  name="train"
+                  color="white"
+                ></ion-icon>
+                <!-- icon bus -->
+                <ion-icon
+                  *ngIf="leg.mode!=='WALK' && leg.mode!=='TRAIN'"
+                  name="bus"
+                  color="white"
+                ></ion-icon>
+                <p>{{convertSecondsToMinutes(leg.duration)}}</p>
+              </div>
+            </ion-item>
+          </ion-list>
+        </div>
+        <div *ngIf="!ItineraryLayerState">
+          <p>Aucun itineraire</p>
+          <ion-button (click)="goToItineary()">Creer un itineraire</ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>
