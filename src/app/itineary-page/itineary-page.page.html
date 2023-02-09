@@ -130,49 +130,45 @@
           </ion-header>
           <ion-content class="ion-padding">
             <ion-item *ngIf="ItinaryLoading">
-              <ion-spinner name="crescent"></ion-spinner>
+              <ion-spinner id="itinaryLoading" name="crescent"></ion-spinner>
             </ion-item>
-            <div *ngIf="itinerarys.length>0">
-              <div *ngFor="let itinerary of itinerarys; let index=index">
-                <ion-label>Itinéraire n:{{ index }}</ion-label>
-                <ion-button
-                  fill="outline"
-                  color="light"
-                  (click)="goToMapWithItinerary(itinerary)"
-                >
-                  <ion-icon name="arrow-forward"></ion-icon>
-                </ion-button>
-                <p>Durée : {{itinerary.duration/60}}mins</p>
-                <br />
-                <ion-list>
-                  <ion-item id="ListLegs">
-                    <div
-                      *ngFor="let leg of itinerary.legs"
-                      style="background-color:{{convertRouteColor(leg.routeColor)}};"
-                    >
-                      <ion-icon
-                        *ngIf="leg.mode==='WALK'"
-                        name="walk"
-                        color="white"
-                      ></ion-icon>
-                      <!-- icon tram -->
-                      <ion-icon
-                        *ngIf="leg.mode==='TRAIN'"
-                        name="train"
-                        color="white"
-                      ></ion-icon>
-                      <!-- icon bus -->
-                      <ion-icon
-                        *ngIf="leg.mode!=='WALK' && leg.mode!=='TRAIN'"
-                        name="bus"
-                        color="white"
-                      ></ion-icon>
-                      <p>{{leg.duration/60 | number:'1.0-1'}}mins</p>
-                    </div>
-                  </ion-item>
-                </ion-list>
+            <ion-item-group *ngIf="itinerarys.length > 0">
+              <div *ngFor="let itinerary of itinerarys; let index=index" id="itinary">
+                <ion-label>Itinéraire {{ index }}</ion-label>
+                <p>Durée : {{ roundTime(itinerary.duration/60) }}</p>
+                <ion-item-divider>
+                  <ion-list (click)="goToMapWithItinerary(itinerary)" class="listMoving">
+                    <ion-item id="ListLegs">
+                      <ion-slides>
+                        <div
+                          *ngFor="let leg of itinerary.legs"
+                          style="background-color:{{RouteColorTranslater[leg.routeColor]}};"
+                          class="leg"
+                        >
+                          <ion-icon
+                            *ngIf="leg.mode==='WALK'"
+                            name="walk"
+                            color="white"
+                          ></ion-icon>
+                          <!-- icon tram -->
+                          <ion-icon
+                            *ngIf="leg.mode==='TRAM'"
+                            name="train"
+                            color="white"
+                          ></ion-icon>
+                          <ion-icon
+                            *ngIf="leg.mode==='BUS'"
+                            name="bus"
+                            color="white"
+                          ></ion-icon>
+                          <p>{{roundTime(leg.duration/60)}}</p>
+                        </div>
+                      </ion-slides>
+                    </ion-item>
+                  </ion-list>
+                </ion-item-divider>
               </div>
-            </div>
+            </ion-item-group>
           </ion-content>
         </ng-template>
       </ion-modal>

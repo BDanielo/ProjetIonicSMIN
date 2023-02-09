@@ -30,6 +30,8 @@ export class ItinearyPagePage implements OnInit {
     queryParams: { itinerary: this.currentItenary },
   };
 
+
+
   constructor(
     public MtagService: MTAGAPIService,
     public favoritesService: FavoritesService,
@@ -43,7 +45,7 @@ export class ItinearyPagePage implements OnInit {
   }
 
   fromSearch: string = 'gare de grenoble';
-  toSearch: string = '33 avenue aristide briand';
+  toSearch: string = '2 rue colonel manhes';
 
   @ViewChild(IonModal) modal: any;
 
@@ -204,6 +206,15 @@ export class ItinearyPagePage implements OnInit {
         "Veuillez sélectionner une station d'arrivée et une station de départ"
       );
     }
+  }
+
+  roundTime(num: number) {
+    let tmp = Math.round(num);
+    if (tmp >= 60) {
+      let nutmp = Math.round(tmp / 60);
+      return nutmp + 'h'+ (tmp - nutmp * 60);
+    }
+    return tmp + 'min';
   }
 
   calcItenerary() {
