@@ -260,7 +260,7 @@ export class MTAGAPIService {
       var url =
         this.mtagApiUrl +
         this.URLitineraire +
-        '?routerId=prod&otp=undefined&mode=TRANSIT&showIntermediateStops=true&numItineraries=5&' +
+        '?routerId=prod&otp=undefined&mode=WALK,TRAM,BUS&showIntermediateStops=true&numItineraries=5&' +
         `fromPlace=${from.lat},${from.lon}&toPlace=${to.lat},${to.lon}&arriveBy=${arriveBy}&time=${time}&date=${date}&locale=fr_FR`;
       let dateNow = new Date();
 

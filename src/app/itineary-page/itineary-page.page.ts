@@ -243,6 +243,11 @@ export class ItinearyPagePage implements OnInit {
               console.log(data);
               this.itinerarys = data;
               console.log(this.itinerarys);
+
+              // sort itineraries by duration
+              this.itinerarys.sort((a, b) => {
+                return a.duration - b.duration;
+              });
             });
           }
         );
@@ -251,4 +256,8 @@ export class ItinearyPagePage implements OnInit {
   }
 
   showItenerarys() {}
+
+  convertRouteColor(color: string) {
+    return '#' + color;
+  }
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 
 // import leaflet routing machine
 import * as leaflet from 'leaflet';
@@ -18,7 +18,7 @@ import { LineSchedule } from '../interfaces/line-schedule';
 import { StationsOfLine } from '../interfaces/stations-of-line';
 
 import 'polyline-encoded';
-import { NavController } from '@ionic/angular';
+import { IonModal, NavController } from '@ionic/angular';
 import { FavoritesService } from '../services/favorites.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -68,6 +68,8 @@ export class Tab1Page {
   };
 
   ItineraryLayerState: boolean = false;
+
+  @ViewChild(IonModal) modal: any;
 
   constructor(
     public MtagService: MTAGAPIService,
@@ -314,8 +316,10 @@ export class Tab1Page {
       this.currentItenary.legs.forEach((leg: leg) => {
         console.log(leg);
 
+        // create a polyline from a decoded traject geometry
         var polyline = L.Polyline.fromEncoded(leg.legGeometry.points);
 
+        //check traject type
         if (leg.mode == 'WALK') {
           polyline.setStyle({ color: 'red' });
         } else {
@@ -323,6 +327,14 @@ export class Tab1Page {
         }
 
         this.ItinerarieLayer.addLayer(polyline);
+
+        // remove start and end markers
+        if (this.ItinerarieStartMarker != undefined) {
+          this.map!.removeLayer(this.ItinerarieStartMarker);
+        }
+        if (this.ItinerarieEndMarker != undefined) {
+          this.map!.removeLayer(this.ItinerarieEndMarker);
+        }
 
         // add start and end markers
         this.ItinerarieStartMarker = L.marker([
@@ -457,6 +469,7 @@ export class Tab1Page {
   }
 
   search(lat: number, lon: number) {
+    this.SearchResultsTab[0] = [];
     this.MtagService.reverseGeoCoding(lat, lon).then((data: any) => {
       this.SearchResults = data;
       if (this.markerSearch) this.map?.removeLayer(this.markerSearch);
@@ -482,6 +495,36 @@ export class Tab1Page {
   }
 
   goToItineary() {
+    this.exitModal();
     this.navCtrl.navigateForward('/itineary-page');
+  }
+
+  convertRouteColor(color: string) {
+    return '#' + color;
+  }
+
+  convertTimestamp(timeStamp: number) {
+    let date = new Date(timeStamp);
+    let hours = date.getHours();
+    let minutes = '0' + date.getMinutes();
+    let seconds = '0' + date.getSeconds();
+    return hours + ':' + minutes.substr(-2);
+  }
+
+  convertSecondsToMinutes(seconds: number) {
+    let minutes = Math.floor(seconds / 60);
+    let secondsLeft = seconds % 60;
+    let result = '';
+    if (minutes > 0) {
+      result += minutes + ' min ';
+    }
+    if (secondsLeft > 0) {
+      result += secondsLeft + ' secs';
+    }
+    return result;
+  }
+
+  exitModal() {
+    this.modal.dismiss();
   }
 }
