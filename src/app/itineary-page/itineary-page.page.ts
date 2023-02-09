@@ -280,8 +280,13 @@ export class ItinearyPagePage implements OnInit {
 
   convertSecondsToMinutes(seconds: number) {
     let minutes = Math.floor(seconds / 60);
+    let hours = Math.floor(minutes / 60);
+    minutes = minutes % 60;
     let secondsLeft = seconds % 60;
     let result = '';
+    if (hours > 0) {
+      result += hours + ' h ';
+    }
     if (minutes > 0) {
       result += minutes + ' min ';
     }
