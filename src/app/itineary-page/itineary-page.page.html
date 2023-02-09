@@ -133,16 +133,33 @@
               <ion-spinner id="itinaryLoading" name="crescent"></ion-spinner>
             </ion-item>
             <ion-item-group *ngIf="itinerarys.length > 0">
-              <div *ngFor="let itinerary of itinerarys; let index=index" id="itinary">
-                <ion-label>Itinéraire {{ index }}</ion-label>
-                <p>Durée : {{ roundTime(itinerary.duration/60) }}</p>
+              <div
+                *ngFor="let itinerary of itinerarys; let index=index"
+                id="itinary"
+              >
+                <ion-label
+                  >Itinéraire n:{{ index }} | Durée : {{
+                  convertSecondsToMinutes(itinerary.duration) }}</ion-label
+                >
+                <div>
+                  <span>
+                    Heure de départ : {{ convertTimestamp(itinerary.startTime)
+                    }}
+                  </span>
+                  <span>
+                    Heure d'arrivée : {{ convertTimestamp(itinerary.endTime) }}
+                  </span>
+                </div>
                 <ion-item-divider>
-                  <ion-list (click)="goToMapWithItinerary(itinerary)" class="listMoving">
+                  <ion-list
+                    (click)="goToMapWithItinerary(itinerary)"
+                    class="listMoving"
+                  >
                     <ion-item id="ListLegs">
                       <ion-slides>
                         <div
                           *ngFor="let leg of itinerary.legs"
-                          style="background-color:{{RouteColorTranslater[leg.routeColor]}};"
+                          style="background-color:{{convertRouteColor(leg.routeColor)}};"
                           class="leg"
                         >
                           <ion-icon
@@ -152,12 +169,12 @@
                           ></ion-icon>
                           <!-- icon tram -->
                           <ion-icon
-                            *ngIf="leg.mode==='TRAM'"
+                            *ngIf="leg.mode==='TRAM' || leg.mode==='TRAIN'"
                             name="train"
                             color="white"
                           ></ion-icon>
                           <ion-icon
-                            *ngIf="leg.mode==='BUS'"
+                            *ngIf="leg.mode!=='WALK' && leg.mode!=='TRAM' && leg.mode!=='TRAIN'"
                             name="bus"
                             color="white"
                           ></ion-icon>

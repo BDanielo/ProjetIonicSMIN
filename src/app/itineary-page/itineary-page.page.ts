@@ -30,8 +30,6 @@ export class ItinearyPagePage implements OnInit {
     queryParams: { itinerary: this.currentItenary },
   };
 
-
-
   constructor(
     public MtagService: MTAGAPIService,
     public favoritesService: FavoritesService,
@@ -212,7 +210,7 @@ export class ItinearyPagePage implements OnInit {
     let tmp = Math.round(num);
     if (tmp >= 60) {
       let nutmp = Math.round(tmp / 60);
-      return nutmp + 'h'+ (tmp - nutmp * 60);
+      return nutmp + 'h' + (tmp - nutmp * 60);
     }
     return tmp + 'min';
   }
@@ -270,5 +268,26 @@ export class ItinearyPagePage implements OnInit {
 
   convertRouteColor(color: string) {
     return '#' + color;
+  }
+
+  convertTimestamp(timeStamp: number) {
+    let date = new Date(timeStamp);
+    let hours = date.getHours();
+    let minutes = '0' + date.getMinutes();
+    let seconds = '0' + date.getSeconds();
+    return hours + ':' + minutes.substr(-2);
+  }
+
+  convertSecondsToMinutes(seconds: number) {
+    let minutes = Math.floor(seconds / 60);
+    let secondsLeft = seconds % 60;
+    let result = '';
+    if (minutes > 0) {
+      result += minutes + ' min ';
+    }
+    if (secondsLeft > 0) {
+      result += secondsLeft + ' secs';
+    }
+    return result;
   }
 }
