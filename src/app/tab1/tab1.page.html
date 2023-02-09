@@ -98,10 +98,18 @@
           </ion-list>
         </div>
         <div *ngIf="!ItineraryLayerState">
-          <p>Aucun itineraire</p>
+          <p>Aucun itineraire {{markerSearch}}</p>
           <ion-button (click)="goToItineary()">Creer un itineraire</ion-button>
         </div>
       </ion-content>
     </ng-template>
   </ion-modal>
+  <div id="btnFavMarker">
+    <ion-button *ngIf="markerSearchFav" (click)="toggleMarkerSearchFav()">
+      <ion-icon name="heart"></ion-icon>
+    </ion-button>
+    <ion-button *ngIf="!markerSearchFav" (click)="toggleMarkerSearchFav()">
+      <ion-icon name="heart-outline"></ion-icon>
+    </ion-button>
+  </div>
 </ion-content>

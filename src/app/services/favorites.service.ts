@@ -45,12 +45,20 @@ export class FavoritesService {
 
   // create a function to compare two favorite, and return true if they are the same
   compareFavorite(fav1: Favorite, fav2: Favorite) {
-    if (
-      fav1.type === fav2.type &&
-      (fav1.stationId === fav2.stationId ||
-        (fav1.lat === fav2.lat && fav1.lon === fav2.lon))
-    ) {
-      return true;
+    if (fav1.type === fav2.type) {
+      if (fav1.type === 'location') {
+        if (fav1.lat === fav2.lat && fav1.lon === fav2.lon) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        if (fav1.stationId === fav2.stationId && fav1.line === fav2.line) {
+          return true;
+        } else {
+          return false;
+        }
+      }
     } else {
       return false;
     }

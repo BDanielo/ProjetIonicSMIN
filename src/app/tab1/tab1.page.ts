@@ -435,18 +435,24 @@ export class Tab1Page {
 
   toggleMarkerSearchFav() {
     //alert('toggleMarkerSearchFav');
+    console.log('TOGGLE FAV');
     this.markerSearchFav = !this.markerSearchFav;
     if (this.markerSearchFav) {
+      console.log('ADD FAV');
       this.favoritesService.addFavorite({
         name: this.markerSearchInfo.name,
-        type: 'custom',
+        type: 'location',
         stationId: '',
         line: '',
         lat: this.markerSearchInfo.lat,
         lon: this.markerSearchInfo.lon,
       });
     } else {
-      this.map?.removeLayer(this.markerSearch);
+      console.log('REMOVE FAV');
+      this.favoritesService.removeFavoriteByName(
+        this.markerSearchInfo.name,
+        'location'
+      );
     }
   }
 
@@ -469,10 +475,54 @@ export class Tab1Page {
       console.log(this.markerSearchFav);
       console.log(this.markerSearchInfo);
 
-      let popupContent = '<p>' + data.name + '</p>' + buttonAller + buttonFav;
+      console.log('FAV');
+      console.log(this.markerSearchFav);
+
+      this.markerSearchFav = this.favoritesService.isFavorite({
+        name: data.name,
+        stationId: '',
+        line: '',
+        type: 'location',
+        lat: data.lat,
+        lon: data.lon,
+      });
+
+      let popupContent =
+        '<p>' + data.name + '</p><div id="popupMarkSearch"></div>';
       this.markerSearch.bindPopup(popupContent);
       this.map?.setView([data.lat, data.lon], 20);
       this.markerSearch.openPopup();
+
+      this.markerSearch.on('popupclose', () => {
+        let btns = document.getElementById('btnFavMarker');
+        document.querySelector('ion-content')!.append(btns!);
+      });
+
+      this.markerSearch.on('popupopen', () => {
+        this.markerSearchFav = this.favoritesService.isFavorite({
+          name: data.name,
+          stationId: '',
+          line: '',
+          type: 'location',
+          lat: data.lat,
+          lon: data.lon,
+        });
+
+        console.log('FAV REFRESH');
+        console.log(this.markerSearchFav);
+        console.log(data.name);
+
+        let popupelement = document.getElementById('popupMarkSearch');
+        let btns = document.getElementById('btnFavMarker');
+
+        if (btns) popupelement?.appendChild(btns);
+      });
+      // btnFavMarker
+
+      let popupelement = document.getElementById('popupMarkSearch');
+      let btns = document.getElementById('btnFavMarker');
+
+      if (btns) popupelement?.appendChild(btns);
     });
   }
 
