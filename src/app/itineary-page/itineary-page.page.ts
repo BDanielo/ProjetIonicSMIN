@@ -91,7 +91,6 @@ export class ItinearyPagePage implements OnInit {
 
   ngOnInit() {
     this.favorites = this.favoritesService.getFavoritesByType('location');
-    this.favoritesService.addFavorite(this.fav1);
   }
 
   goToMap() {

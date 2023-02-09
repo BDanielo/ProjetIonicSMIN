@@ -49,12 +49,20 @@
           <ion-buttons slot="start">
             <ion-button (click)="exitModal()">Annuler</ion-button>
           </ion-buttons>
-          <ion-title>Itineraires</ion-title>
+          <ion-title>Itinéraire actuel</ion-title>
+          <ion-buttons slot="end" *ngIf="ItineraryLayerState">
+            <!-- icon trash bin -->
+            <ion-button (click)="deleteAndAddItinerary()"
+              ><ion-icon name="add"></ion-icon
+            ></ion-button>
+            <ion-button (click)="deleteItinerary()"
+              ><ion-icon name="trash-outline" style="color: red"></ion-icon
+            ></ion-button>
+          </ion-buttons>
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding">
         <div *ngIf="ItineraryLayerState">
-          <p>Itineraire actuel</p>
           <p>heure depart: {{convertTimestamp(currentItenary.startTime)}}</p>
           <p>heure arrivee: {{convertTimestamp(currentItenary.endTime)}}</p>
           <p>Duree: {{convertSecondsToMinutes(currentItenary.duration)}}</p>

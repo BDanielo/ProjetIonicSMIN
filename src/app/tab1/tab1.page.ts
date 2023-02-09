@@ -79,10 +79,16 @@ export class Tab1Page {
     private router: Router
   ) {
     this.route.queryParams.subscribe((params) => {
-      this.currentItenary = params['itinerary'];
-      this.ItinerarieStart = params['start'];
-      this.ItinerarieEnd = params['end'];
-      this.drawItinerary();
+      // check if the url contain a intinerary
+      if (params['itinerary']) {
+        this.currentItenary = params['itinerary'];
+        this.ItinerarieStart = params['start'];
+        this.ItinerarieEnd = params['end'];
+        // check if map is loaded
+        if (this.map) {
+          this.drawItinerary();
+        }
+      }
     });
   }
 
@@ -101,9 +107,6 @@ export class Tab1Page {
         maxZoom: 18,
       })
       .addTo(this.map);
-
-    // add geocoder control
-    // L.Control.geocoder().addTo(this.map);
 
     // add tram line layer
     this.TramLineLayer = L.layerGroup().addTo(this.map);
@@ -124,32 +127,11 @@ export class Tab1Page {
     // get localisation
     this.getLocation();
 
-    // console.log(test);
-
-    // this.MtagService.getStopTimesFromStation('SEM:GENLETOILE', 'SEM:A').then(
-    //   (data: any) => {
-    //     console.log('GET STOPS FROM STATION');
-    //     console.log(data);
-    //   }
-    // );
-
-    let from: GeoPoint = { lat: 45.19270700749426, lon: 5.718059703818313 };
-    let to: GeoPoint = { lat: 45.189162995391825, lon: 5.696816464474088 };
-
-    // 45.191247592086214, 5.713803536078038
-    let gare: GeoPoint = { lat: 45.191247592086214, lon: 5.713803536078038 };
-
-    // this.markStations();
     this.markLines();
-    // this.getItinerarie(from, to);
 
-    this.MtagService.searchGeocoding('gare grenoble').then((data: any) => {});
-
-    this.MtagService.searchGeocoding('33 avenue aristide briand').then(
-      (data: any) => {}
-    );
-
-    // check if the url contain a intinerary
+    if (this.currentItenary.legs.length > 0) {
+      this.drawItinerary();
+    }
   }
 
   getLocation(): Promise<Position> {
@@ -526,5 +508,22 @@ export class Tab1Page {
 
   exitModal() {
     this.modal.dismiss();
+  }
+
+  deleteItinerary() {
+    this.currentItenary = {
+      duration: 0,
+      startTime: 0,
+      endTime: 0,
+      legs: [],
+    };
+    this.ItineraryLayerState = false;
+    this.markLines();
+    this.exitModal();
+  }
+
+  deleteAndAddItinerary() {
+    this.deleteItinerary();
+    this.goToItineary();
   }
 }
