@@ -44,8 +44,8 @@ export class ItinearyPagePage implements OnInit {
     };
   }
 
-  fromSearch: string = 'gare de grenoble';
-  toSearch: string = '2 rue colonel manhes';
+  fromSearch: string = '';
+  toSearch: string = '';
 
   @ViewChild(IonModal) modal: any;
 
@@ -58,10 +58,6 @@ export class ItinearyPagePage implements OnInit {
   itinerarys: any[] = [];
 
   ItinaryLoading: boolean = false;
-
-  public RouteColorTranslater: { [id: string]: string } = {
-    '3376B8': '#3376B8',
-  };
 
   favorites: Favorite[] = [];
 
