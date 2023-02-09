@@ -45,6 +45,8 @@ export class Tab1Page {
   fromSearch: string = 'gare de grenoble';
   toSearch: string = '33 avenue aristide briand';
 
+  polylineWidth = 5;
+
   fromSearchConfirmed: string = '';
   toSearchConfirmed: string = '';
 
@@ -222,6 +224,7 @@ export class Tab1Page {
           } else {
             polyline.setStyle({ color: '#' + leg.routeColor });
           }
+          polyline.setStyle({ weight: this.polylineWidth });
 
           this.ItinerarieLayer.addLayer(polyline);
 
@@ -307,6 +310,7 @@ export class Tab1Page {
         } else {
           polyline.setStyle({ color: '#' + leg.routeColor });
         }
+        polyline.setStyle({ weight: this.polylineWidth });
 
         this.ItinerarieLayer.addLayer(polyline);
 
@@ -361,6 +365,7 @@ export class Tab1Page {
             var polyline = L.Polyline.fromEncoded(LineGeoPoints);
             // console.log(ligne.color);
             polyline.setStyle({ color: '#' + ligne.color });
+            polyline.setStyle({ weight: this.polylineWidth });
             this.TramLineLayer.addLayer(polyline);
 
             // if last element
