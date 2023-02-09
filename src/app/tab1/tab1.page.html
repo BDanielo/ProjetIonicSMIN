@@ -63,34 +63,50 @@
       </ion-header>
       <ion-content class="ion-padding">
         <div *ngIf="ItineraryLayerState">
-          <p>heure depart: {{convertTimestamp(currentItenary.startTime)}}</p>
+          <!-- <p>heure depart: {{convertTimestamp(currentItenary.startTime)}}</p>
           <p>heure arrivee: {{convertTimestamp(currentItenary.endTime)}}</p>
-          <p>Duree: {{convertSecondsToMinutes(currentItenary.duration)}}</p>
+          <p>Duree: {{convertSecondsToMinutes(currentItenary.duration)}}</p> -->
           <ion-list>
+            <ion-item>
+              <div class="hours">
+                <span>
+                  Départ: {{ convertTimestamp(currentItenary.startTime) }}
+                </span>
+                <span>
+                  Durée : {{ convertSecondsToMinutes(currentItenary.duration) }}
+                </span>
+                <span>
+                  Arrivée: {{ convertTimestamp(currentItenary.endTime) }}
+                </span>
+              </div>
+            </ion-item>
             <ion-item
               *ngFor="let leg of currentItenary.legs"
               style="background-color:{{convertRouteColor(leg.routeColor)}};"
+              id="ListLegs"
               [attr.custColor]="leg.routeColor"
             >
               <div
                 style="background-color:{{convertRouteColor(leg.routeColor)}};"
+                class="leg"
               >
                 <ion-icon
                   *ngIf="leg.mode==='WALK'"
                   name="walk"
                   color="white"
+                  size="large"
                 ></ion-icon>
-                <!-- icon tram -->
                 <ion-icon
                   *ngIf="leg.mode==='TRAIN'"
                   name="train"
                   color="white"
+                  size="large"
                 ></ion-icon>
-                <!-- icon bus -->
                 <ion-icon
                   *ngIf="leg.mode!=='WALK' && leg.mode!=='TRAIN'"
                   name="bus"
                   color="white"
+                  size="large"
                 ></ion-icon>
                 <p>{{convertSecondsToMinutes(leg.duration)}}</p>
               </div>
