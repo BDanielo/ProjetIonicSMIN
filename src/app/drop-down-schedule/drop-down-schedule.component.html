@@ -1,7 +1,10 @@
 <div class="DropDown">
   <div class="dropDown_header">
-    <div (click)="toggleDropDown()" id="lineName" style="background-color: {{ color }};">
+    <div *ngIf="type == 'tramStation'" (click)="toggleDropDown()" id="lineName" style="background-color: {{ color }};">
       {{ lineName }}
+    </div>
+    <div *ngIf="type == 'location'"  (click)="toggleDropDown()" id="lineName" style="background-color: {{ color }};">
+      <ion-icon name="location-sharp"></ion-icon>
     </div>
     <div (click)="toggleDropDown()" id="name" style="width: {{ customWidth }}%;">
       {{ name }}
@@ -20,11 +23,17 @@
           <div class="lineSchedule_direction">
             {{ lineSchedule.direction }} :
           </div>
-          <div class="lineSchedule_time">
+          <div *ngIf="lineSchedule.times[0] != null"  class="lineSchedule_time">
             {{ lineSchedule.times[0] }} min
           </div>
-          <div class="lineSchedule_time">
+          <div *ngIf="lineSchedule.times[0] == null"  class="lineSchedule_time">
+            N/A
+          </div>
+          <div *ngIf="lineSchedule.times[1] != null" class="lineSchedule_time">
             {{ lineSchedule.times[1] }} min
+          </div>
+          <div *ngIf="lineSchedule.times[1] == null"  class="lineSchedule_time">
+            N/A
           </div>
         </div>
       </div>

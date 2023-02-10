@@ -15,15 +15,42 @@ export class Tab3Page {
 
   ngOnInit() {
     this.favorites = this.favoritesService.getFavorites();
-    console.log(this.favorites);
+    this.sortItem()
   }
 
   ionViewWillEnter() {
     this.favorites = this.favoritesService.getFavorites();
+    this.sortItem()
   }
 
   favChange() {
     this.favorites = this.favoritesService.getFavorites();
+    this.sortItem()
+  }
+
+  sortItem(){
+    //sort favorites by favorites.type and favorites.line
+    this.favorites.sort((a, b) => {
+      if (a.type > b.type) {
+        return -1;
+      } else if (a.type < b.type) {
+        return 1;
+      } else {
+        if (a.line.length > b.line.length) {
+          return 1;
+        } else if (a.line.length < b.line.length) {
+          return -1;
+        } else {
+          if (a.line > b.line) {
+            return 1;
+          } else if (a.line < b.line) {
+            return -1;
+          } else {
+            return 0;
+          }
+        }
+      }
+    });
   }
 
 }
