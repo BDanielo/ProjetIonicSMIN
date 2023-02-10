@@ -160,7 +160,7 @@ export class MTAGAPIService {
       // console.log('GET ALL STATIONS');
       // console.log(this.TramStations[0]);
       if (this.TramStations[0] == undefined) {
-        this.TramStations = [];
+        let TramStations: StationsOfLine[] = [];
         this.getTramLines().then((data) => {
           this.TramLines.forEach((element) => {
             this.getTramStations(element.id).then((data: any) => {
@@ -171,11 +171,12 @@ export class MTAGAPIService {
                 TramStation: data,
               };
               // console.log(StationsOfLine);
-              this.TramStations.push(StationsOfLine);
+              TramStations.push(StationsOfLine);
               // check if this is the last element
               if (element.id == this.TramLines[this.TramLines.length - 1].id) {
                 // console.log('FINISHED');
                 // console.log(this.TramStations);
+                this.TramStations = TramStations;
                 resolve(this.TramStations);
               }
             });

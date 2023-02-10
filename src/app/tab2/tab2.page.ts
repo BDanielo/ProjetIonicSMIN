@@ -15,6 +15,7 @@ export class Tab2Page {
 
   ngOnInit() {
     this.mtagService.getAllTramStations().then((data: any) => {
+      console.log();
       this.tramStations = data;
       this.tramStations.sort((a, b) => {
         if (a.Line.length > b.Line.length) {
