@@ -190,7 +190,13 @@
                             name="bus"
                             color="white"
                           ></ion-icon>
-                          <p>{{roundTime(leg.duration/60)}}</p>
+                          <span *ngIf="leg.mode!=='WALK'">
+                            Ligne : {{leg.routeShortName}} <br />
+                            Durée : {{roundTime(leg.duration/60)}}
+                          </span>
+                          <span *ngIf="leg.mode==='WALK'">
+                            {{roundTime(leg.duration/60)}}
+                          </span>
                         </div>
                       </ion-slides>
                     </ion-item>
