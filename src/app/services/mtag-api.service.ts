@@ -79,7 +79,6 @@ export class MTAGAPIService {
           line
         );
 
-      // console.log('STOP TIMES | URL : ' + url);
 
       this.http
         .get(url, {
@@ -88,8 +87,6 @@ export class MTAGAPIService {
           // },
         })
         .subscribe((data: any) => {
-          // console.log('GET HORAIRE DATA : ');
-          // console.log(data);
 
           let lineSchedules: LineSchedule[] = [];
           //chaque direction
@@ -107,16 +104,10 @@ export class MTAGAPIService {
                 (now.getMinutes() + now.getHours() * 60) -
                 60;
 
-              //let minutes = date.getMinutes() - now.getMinutes();
-              // console.log(minutes);
-
               lineSchedule.times.push(minutes.toString());
             });
             lineSchedules.push(lineSchedule);
           });
-
-          // console.log('LINE SCHEDULES : ');
-          // console.log(lineSchedules);
 
           resolve(lineSchedules);
           return lineSchedules;
@@ -129,8 +120,6 @@ export class MTAGAPIService {
       this.http
         .get(this.mtagApiUrl + this.URLarretsLignes.replace(':id', id))
         .subscribe((data: any) => {
-          // console.log('DATA TRAM :');
-          // console.log(data);
           resolve(data);
         });
     });
@@ -146,7 +135,6 @@ export class MTAGAPIService {
           )
           .subscribe((data: any) => {
             this.TramLines = data;
-            // console.log(this.lignesTram);
             resolve(this.TramLines);
           });
       } else {
@@ -157,25 +145,18 @@ export class MTAGAPIService {
 
   getAllTramStations() {
     return new Promise((resolve, reject) => {
-      // console.log('GET ALL STATIONS');
-      // console.log(this.TramStations[0]);
       if (this.TramStations[0] == undefined) {
         let TramStations: StationsOfLine[] = [];
         this.getTramLines().then((data) => {
           this.TramLines.forEach((element) => {
             this.getTramStations(element.id).then((data: any) => {
-              // console.log('DATA :');
-              // console.log(data);
               let StationsOfLine: StationsOfLine = {
                 Line: element.id,
                 TramStation: data,
               };
-              // console.log(StationsOfLine);
               TramStations.push(StationsOfLine);
               // check if this is the last element
               if (element.id == this.TramLines[this.TramLines.length - 1].id) {
-                // console.log('FINISHED');
-                // console.log(this.TramStations);
                 this.TramStations = TramStations;
                 resolve(this.TramStations);
               }
@@ -239,9 +220,6 @@ export class MTAGAPIService {
           },
         })
         .subscribe((data: any) => {
-          // console.log('CALC ITINERARY');
-          // console.log(url);
-          // console.log(data);
           let test: string[] = [];
           // chaques itinéraires
           let Itinerarie: Itineraries = {
@@ -254,7 +232,6 @@ export class MTAGAPIService {
           let minDuration: number = 0;
 
           data.plan.itineraries.forEach((element: Itineraries) => {
-            // console.log('ITINERARY :');
             // get min duration
             if (minDuration === 0) {
               minDuration = element.duration;
@@ -263,10 +240,7 @@ export class MTAGAPIService {
               minDuration = element.duration;
               Itinerarie = element;
             }
-            // console.log(element);
           });
-          // console.log('ITINERARIE : ');
-          // console.log(Itinerarie);
           resolve(Itinerarie);
           return Itinerarie;
         });
@@ -304,9 +278,6 @@ export class MTAGAPIService {
           },
         })
         .subscribe((data: any) => {
-          // console.log('CALC ITINERARY');
-          // console.log(url);
-          // console.log(data);
           let test: string[] = [];
           // chaques itinéraires
           let Itinerarie: Itineraries = {
@@ -332,7 +303,6 @@ export class MTAGAPIService {
       this.http
         .get(this.mtagApiUrl + this.URLlignePolyline.replace(':ligne', line))
         .subscribe((data: any) => {
-          // console.log(data);
           resolve(data);
         });
     });
@@ -344,8 +314,6 @@ export class MTAGAPIService {
         this.URLnominatimReverse +
         `?lat=${lat}&lon=${lon}&namedetails=1&addressdetails=1&format=json`;
       this.http.get(url).subscribe((data: any) => {
-        //console.log('POS :' + lat + ',' + lon + ' url : ' + url);
-        // console.log(data);
 
         let nameAdr: string = '';
         if (details) {
@@ -377,8 +345,6 @@ export class MTAGAPIService {
           lat: data.lat,
           lon: data.lon,
         };
-        //console.log(adresse);
-
         resolve(adresse);
       });
     });
@@ -391,7 +357,6 @@ export class MTAGAPIService {
         this.URLnominatimSearch +
         `?street=${encodeURI(search)}&county=Isere&format=json`;
       this.http.get(url).subscribe((data: any) => {
-        //console.log(search + ' url : ' + url);
 
         this.reverseGeoCoding(data[0].lat, data[0].lon).then((data: any) => {
           resolve(data);
@@ -405,7 +370,6 @@ export class MTAGAPIService {
     return new Promise((resolve, reject) => {
       let url = this.URLnominatimSearch + `?q=${encodeURI(search)}&format=json`;
       this.http.get(url).subscribe((data: any) => {
-        //console.log(search + ' url : ' + url);
 
         this.reverseGeoCoding(data[0].lat, data[0].lon).then((data: any) => {
           resolve(data);
@@ -427,8 +391,7 @@ export class MTAGAPIService {
           `?street=${encodeURI(search)}&county=Isere&limit=5&format=json`;
       }
       this.http.get(url).subscribe((data: any) => {
-        //console.log(search + ' url : ' + url);
-        //console.log(data);
+        
 
         let list: AddressDetails[] = [];
 
@@ -455,7 +418,6 @@ export class MTAGAPIService {
             list.push(tempAdr);
             // if last element
             if (element === data[data.length - 1]) {
-              // console.log(list);
               resolve(list);
             }
           });
@@ -476,9 +438,6 @@ export class MTAGAPIService {
           .replace(':dist', '300');
 
       this.http.get(url).subscribe((data: any) => {
-        // console.log('POS :' + lat + ',' + lon + ' url : ' + url);
-        // console.log(data);
-
         // limit data to 5 element
         if (data.length > 5) {
           data = data.slice(0, 5);
@@ -508,12 +467,9 @@ export class MTAGAPIService {
               // }
               tmpList.TramStation.push(Station);
 
-              console.log('TMP LIST');
-              console.log(tmpList);
+          
               count++;
-              console.log('COUNT : ' + count + ' / ' + data.length);
               if (count == data.length) {
-                console.log('FINISHED');
 
                 // filter duplicate station based on station name
                 tmpList.TramStation = tmpList.TramStation.filter(

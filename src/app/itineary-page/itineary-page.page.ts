@@ -156,7 +156,6 @@ export class ItinearyPagePage implements OnInit {
       this.MtagService.reverseGeoCoding(fav.lat, fav.lon, true).then(
         (res: any) => {
           this.fromSearchConfirmed = res.name;
-          console.log(this.fromSearchConfirmed);
         }
       );
       this.isFrom = false;
@@ -165,7 +164,6 @@ export class ItinearyPagePage implements OnInit {
       this.MtagService.reverseGeoCoding(fav.lat, fav.lon, true).then(
         (res: any) => {
           this.toSearchConfirmed = res.name;
-          console.log(this.toSearchConfirmed);
         }
       );
       this.isFrom = true;
@@ -242,7 +240,6 @@ export class ItinearyPagePage implements OnInit {
   searchAutocomplete(event: any, direction: number) {
     const query = event.target.value.toLowerCase();
     this.SearchResultsTab[direction] = [];
-    // console.log(query);
     if (query.length > 2) {
       if (
         (direction == 1 && this.toSearchConfirmed == '') ||
@@ -296,14 +293,12 @@ export class ItinearyPagePage implements OnInit {
             let hours = date.getHours();
             let minutes = date.getMinutes();
             let time = hours + ':' + minutes;
-            console.log(time);
 
             // parse date in format YYYY-MM-DD
             let day = date.getDate();
             let month = date.getMonth() + 1;
             let year = date.getFullYear();
             let dateStr = year + '-' + month + '-' + day;
-            console.log(dateStr);
             this.MtagService.calcItinerarys(
               from,
               to,
@@ -312,10 +307,7 @@ export class ItinearyPagePage implements OnInit {
               dateStr
             ).then((data: any) => {
               this.ItinaryLoading = false;
-              console.log(data);
               this.itinerarys = data;
-              console.log(this.itinerarys);
-
               // sort itineraries by duration
               this.itinerarys.sort((a, b) => {
                 return a.duration - b.duration;

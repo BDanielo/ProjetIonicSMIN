@@ -18,7 +18,6 @@ export class FavoritesService {
   constructor(public storageService: StorageService) {
     this.storageService.getFavorites().then((val) => {
       if (val) {
-        console.log(val);
         this.favorites = val;
       }
     });

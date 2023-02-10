@@ -139,7 +139,6 @@ export class Tab1Page {
       // get localisation
       this.getLocation().then((position: any) => {
         this.MtagService.getClosestStation(position).then((station) => {
-          console.log('closest station : ', station);
         });
       });
     }
@@ -182,7 +181,6 @@ export class Tab1Page {
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition()
         .then((position: any) => {
-          console.log('location from service : ', position);
           let tmpGeoPoint: GeoPoint = {
             lat: position.coords.latitude,
             lon: position.coords.longitude,
@@ -268,7 +266,6 @@ export class Tab1Page {
     this.MtagService.calcItinerary(from, to, false, '', '').then(
       (data: any) => {
         data.legs.forEach((leg: leg) => {
-          //console.log(leg);
 
           var polyline = L.Polyline.fromEncoded(leg.legGeometry.points);
 
@@ -352,7 +349,6 @@ export class Tab1Page {
 
     if (this.currentItenary != undefined) {
       this.currentItenary.legs.forEach((leg: leg) => {
-        //console.log(leg);
 
         // create a polyline from a decoded traject geometry
         var polyline = L.Polyline.fromEncoded(leg.legGeometry.points);
@@ -420,14 +416,10 @@ export class Tab1Page {
       this.TramLineLayer = L.layerGroup().addTo(this.map);
       this.MtagService.getTramLines().then((data: any) => {
         this.lignesTram = data;
-        // console.log('Lignes de tram');
-        // console.log(data);
         this.lignesTram.forEach((ligne: TramLine) => {
           this.MtagService.getLinesPolyline(ligne.id).then((data: any) => {
             let LineGeoPoints = data.features[0].properties.shape[0];
-            // console.log(LineGeoPoints);
             var polyline = L.Polyline.fromEncoded(LineGeoPoints);
-            // console.log(ligne.color);
             polyline.setStyle({ color: '#' + ligne.color });
             polyline.setStyle({ weight: this.polylineWidth });
             this.TramLineLayer.addLayer(polyline);
@@ -447,7 +439,6 @@ export class Tab1Page {
     this.markLines().then(() => {
       this.TramStationLayer = L.layerGroup().addTo(this.map);
       this.MtagService.getAllTramStations().then((data: any) => {
-        //console.log(data);
         data.forEach((line: StationsOfLine) => {
           line.TramStation.forEach((station: TramStation) => {
             const marker = L.marker([station.lat, station.lon]).addTo(
@@ -464,7 +455,6 @@ export class Tab1Page {
   searchAutocomplete(event: any, direction: number) {
     const query = event.target.value.toLowerCase();
     this.SearchResultsTab[direction] = [];
-    // console.log(query);
     if (query.length > 2) {
       this.MtagService.searchAutocomplete(query).then((data: any) => {
         if (data == null) {
@@ -477,7 +467,6 @@ export class Tab1Page {
   }
 
   changeSearch(direction: number, value: string) {
-    //console.log('direction : ' + direction + ' value : ' + value);
     this.SearchResultsTab[direction] = [];
     if (direction == 0) {
       this.fromSearch = value;

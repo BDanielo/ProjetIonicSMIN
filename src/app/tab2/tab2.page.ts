@@ -15,7 +15,6 @@ export class Tab2Page {
 
   ngOnInit() {
     this.mtagService.getAllTramStations().then((data: any) => {
-      console.log();
       this.tramStations = data;
       this.tramStations.sort((a, b) => {
         if (a.Line.length > b.Line.length) {
@@ -37,7 +36,6 @@ export class Tab2Page {
     // this.getLocation().then((position: any) => {
     //   this.mtagService.getClosestStation(position).then((station) => {
     //     this.tramStationsClosest[0] = station;
-    //     console.log('closest station : ', this.tramStationsClosest);
     //   });
     // });
   }
@@ -46,7 +44,6 @@ export class Tab2Page {
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition()
         .then((position: any) => {
-          console.log('location from service : ', position);
           let tmpGeoPoint: GeoPoint = {
             lat: position.coords.latitude,
             lon: position.coords.longitude,
