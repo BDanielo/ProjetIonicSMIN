@@ -113,14 +113,16 @@ export class Tab1Page {
     leaflet.Icon.Default.imagePath = '/assets/images/leaflet/';
 
     // create map
-    this.map = leaflet
-      .map('map', { zoomControl: false })
-      .setView([45.19270700749426, 5.718059703818313], 20);
-    leaflet
-      .tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-      })
-      .addTo(this.map);
+    if (this.map == undefined) {
+      this.map = leaflet
+        .map('map', { zoomControl: false })
+        .setView([45.19270700749426, 5.718059703818313], 20);
+      leaflet
+        .tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+        })
+        .addTo(this.map);
+    }
 
     // add tram line layer
     this.TramLineLayer = L.layerGroup().addTo(this.map);
@@ -138,8 +140,7 @@ export class Tab1Page {
     } else {
       // get localisation
       this.getLocation().then((position: any) => {
-        this.MtagService.getClosestStation(position).then((station) => {
-        });
+        this.MtagService.getClosestStation(position).then((station) => {});
       });
     }
   }
@@ -266,7 +267,6 @@ export class Tab1Page {
     this.MtagService.calcItinerary(from, to, false, '', '').then(
       (data: any) => {
         data.legs.forEach((leg: leg) => {
-
           var polyline = L.Polyline.fromEncoded(leg.legGeometry.points);
 
           if (leg.mode == 'WALK') {
@@ -349,7 +349,6 @@ export class Tab1Page {
 
     if (this.currentItenary != undefined) {
       this.currentItenary.legs.forEach((leg: leg) => {
-
         // create a polyline from a decoded traject geometry
         var polyline = L.Polyline.fromEncoded(leg.legGeometry.points);
 

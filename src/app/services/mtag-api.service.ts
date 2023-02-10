@@ -79,7 +79,6 @@ export class MTAGAPIService {
           line
         );
 
-
       this.http
         .get(url, {
           // headers: {
@@ -87,7 +86,6 @@ export class MTAGAPIService {
           // },
         })
         .subscribe((data: any) => {
-
           let lineSchedules: LineSchedule[] = [];
           //chaque direction
           data.forEach((element: any) => {
@@ -314,7 +312,6 @@ export class MTAGAPIService {
         this.URLnominatimReverse +
         `?lat=${lat}&lon=${lon}&namedetails=1&addressdetails=1&format=json`;
       this.http.get(url).subscribe((data: any) => {
-
         let nameAdr: string = '';
         if (details) {
           nameAdr = data.display_name;
@@ -357,7 +354,6 @@ export class MTAGAPIService {
         this.URLnominatimSearch +
         `?street=${encodeURI(search)}&county=Isere&format=json`;
       this.http.get(url).subscribe((data: any) => {
-
         this.reverseGeoCoding(data[0].lat, data[0].lon).then((data: any) => {
           resolve(data);
         });
@@ -370,7 +366,6 @@ export class MTAGAPIService {
     return new Promise((resolve, reject) => {
       let url = this.URLnominatimSearch + `?q=${encodeURI(search)}&format=json`;
       this.http.get(url).subscribe((data: any) => {
-
         this.reverseGeoCoding(data[0].lat, data[0].lon).then((data: any) => {
           resolve(data);
         });
@@ -391,8 +386,6 @@ export class MTAGAPIService {
           `?street=${encodeURI(search)}&county=Isere&limit=5&format=json`;
       }
       this.http.get(url).subscribe((data: any) => {
-        
-
         let list: AddressDetails[] = [];
 
         if (data.length === 0) {
@@ -467,10 +460,8 @@ export class MTAGAPIService {
               // }
               tmpList.TramStation.push(Station);
 
-          
               count++;
               if (count == data.length) {
-
                 // filter duplicate station based on station name
                 tmpList.TramStation = tmpList.TramStation.filter(
                   (thing, index, self) =>
