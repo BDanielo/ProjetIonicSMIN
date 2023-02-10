@@ -18,6 +18,7 @@ export interface leg {
   duration: number;
   routeId: string;
   routeColor: string;
+  routeShortName: string;
 }
 
 export interface LegGeometry {

@@ -71,6 +71,8 @@ export class ItinearyPagePage implements OnInit {
   chosenDate = '';
   isFrom = true;
 
+  msgError = '';
+
   recents: Recent[] = [];
 
   StartItineraryMarker: AddressDetails | undefined;
@@ -88,6 +90,7 @@ export class ItinearyPagePage implements OnInit {
 
   cancel() {
     this.modal.dismiss(null, 'cancel');
+    this.msgError = '';
   }
 
   ngOnInit() {
@@ -156,6 +159,7 @@ export class ItinearyPagePage implements OnInit {
       this.MtagService.reverseGeoCoding(fav.lat, fav.lon, true).then(
         (res: any) => {
           this.fromSearchConfirmed = res.name;
+          document.getElementById('fromInput')!.style.color = 'white';
         }
       );
       this.isFrom = false;
@@ -164,6 +168,7 @@ export class ItinearyPagePage implements OnInit {
       this.MtagService.reverseGeoCoding(fav.lat, fav.lon, true).then(
         (res: any) => {
           this.toSearchConfirmed = res.name;
+          document.getElementById('toInput')!.style.color = 'white';
         }
       );
       this.isFrom = true;
@@ -174,10 +179,12 @@ export class ItinearyPagePage implements OnInit {
     if (this.isFrom) {
       this.fromSearch = recent.name;
       this.fromSearchConfirmed = recent.name;
+      document.getElementById('fromInput')!.style.color = 'white';
       this.isFrom = false;
     } else {
       this.toSearch = recent.name;
       this.toSearchConfirmed = recent.name;
+      document.getElementById('toInput')!.style.color = 'white';
       this.isFrom = true;
     }
   }
@@ -269,9 +276,8 @@ export class ItinearyPagePage implements OnInit {
       // this.navCtrl.navigateForward('/tabs/tab1');
       this.calcItenerary();
     } else {
-      alert(
-        "Veuillez sélectionner une station d'arrivée et une station de départ"
-      );
+      this.msgError =
+        "/!\\ Erreur : Veuillez sélectionner une adresse de départ et d'arrivée correcte";
     }
   }
 

@@ -122,16 +122,22 @@ export class Tab1Page {
           maxZoom: 18,
         })
         .addTo(this.map);
+      this.map.attributionControl.setPrefix(false);
     }
 
     // add tram line layer
-    this.TramLineLayer = L.layerGroup().addTo(this.map);
+    // if tram line layer is not already added
+    if (this.TramLineLayer == undefined) {
+      this.TramLineLayer = L.layerGroup().addTo(this.map);
+    }
 
-    // add itinerarie layer
-    this.ItinerarieLayer = L.layerGroup().addTo(this.map);
+    if (this.ItinerarieLayer == undefined) {
+      this.ItinerarieLayer = L.layerGroup().addTo(this.map);
+    }
 
-    // add tram station layer
-    this.TramStationLayer = L.layerGroup().addTo(this.map);
+    if (this.TramStationLayer == undefined) {
+      this.TramStationLayer = L.layerGroup().addTo(this.map);
+    }
 
     this.markLines();
 
@@ -337,6 +343,7 @@ export class Tab1Page {
   }
 
   drawItinerary() {
+    console.log(this.currentItenary);
     // remove all other layers (tram line, stations) and clear initerarie layer
     this.map!.removeLayer(this.TramLineLayer);
     this.map!.removeLayer(this.TramStationLayer);

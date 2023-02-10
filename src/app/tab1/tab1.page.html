@@ -97,18 +97,24 @@
                   size="large"
                 ></ion-icon>
                 <ion-icon
-                  *ngIf="leg.mode==='TRAIN'"
+                  *ngIf="leg.mode==='TRAIN' || leg.mode==='TRAM'"
                   name="train"
                   color="white"
                   size="large"
                 ></ion-icon>
                 <ion-icon
-                  *ngIf="leg.mode!=='WALK' && leg.mode!=='TRAIN'"
+                  *ngIf="leg.mode!=='WALK' && leg.mode!=='TRAIN' && leg.mode!=='TRAM'"
                   name="bus"
                   color="white"
                   size="large"
                 ></ion-icon>
-                <p>{{convertSecondsToMinutes(leg.duration)}}</p>
+                <p *ngIf="leg.mode!=='WALK'">
+                  Ligne : {{leg.routeShortName}} Durée :
+                  {{convertSecondsToMinutes(leg.duration)}}
+                </p>
+                <p *ngIf="leg.mode==='WALK'">
+                  {{convertSecondsToMinutes(leg.duration)}}
+                </p>
               </div>
             </ion-item>
           </ion-list>
